@@ -12,14 +12,14 @@ space := $(subst ,, )
 # .deb package versioning
 OS_RELEASE = $(shell lsb_release -cs)
 PKG_VERSION ?= $(shell echo $(VERSION) | sed "s/^v//" | \
-			sed -E "s/(.*)-(g[a-fA-F0-9]{6,8})(.*)/\1\3~\2/" | \
-			sed "s/-/~/")-${OS_RELEASE}
+	sed -E "s/(.*)-(g[a-fA-F0-9]{6,8})(.*)/\1\3~\2/" | \
+	sed "s/-/~/")-${OS_RELEASE}
 
 all: $(DIRS) locode_db
 
 $(DIRS):
-				@echo "⇒ Ensure dir: $@"
-				@mkdir -p $@
+	@echo "⇒ Ensure dir: $@"
+	@mkdir -p $@
 
 in/airports.dat:
 	wget -c https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat -O in/airports.dat
@@ -42,6 +42,7 @@ locode_db: unlocode in/continents.geojson in/airports.dat in/countries.dat
 	--in in/2022-1\ UNLOCODE\ CodeListPart1.csv,in/2022-1\ UNLOCODE\ CodeListPart2.csv,in/2022-1\ UNLOCODE\ CodeListPart3.csv \
 	--subdiv in/2022-1\ SubdivisionCodes.csv \
 	--out locode_db
+	chmod 644 locode_db
 
 # Print version
 version:
@@ -66,12 +67,12 @@ clean:
 # Package for Debian
 debpackage:
 	dch --package neofs-locode-db \
-			--controlmaint \
-			--newversion $(PKG_VERSION) \
-			--force-bad-version \
-			--distribution $(OS_RELEASE) \
-			"Please see CHANGELOG.md for code changes for $(VERSION)"
+		--controlmaint \
+		--newversion $(PKG_VERSION) \
+		--force-bad-version \
+		--distribution $(OS_RELEASE) \
+		"Please see CHANGELOG.md for code changes for $(VERSION)"
 	dpkg-buildpackage --no-sign -b
 
 debclean:
-	dh clean	
+	dh clean

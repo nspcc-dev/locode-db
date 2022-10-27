@@ -3,3 +3,4 @@ in/
 locode_db
 # debhelpers
 **/.debhelper
+debian/changelog
