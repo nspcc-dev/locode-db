@@ -11,10 +11,10 @@
 
 # Overview
 
-This repository contains instructions to generate UN/LOCODE database for NeoFS 
+This repository contains instructions to generate UN/LOCODE database for NeoFS
 and raw representation of it. NeoFS uses UN/LOCODE in storage node attributes
-and storage policies. Inner ring nodes converts UN/LOCODE into human-readable 
-set of attributes such as continent, country name, etc. You can find out 
+and storage policies. Inner ring nodes converts UN/LOCODE into human-readable
+set of attributes such as continent, country name, etc. You can find out
 more in [NeoFS Specification](https://github.com/nspcc-dev/neofs-spec).
 
 
@@ -23,7 +23,7 @@ more in [NeoFS Specification](https://github.com/nspcc-dev/neofs-spec).
 ## Prerequisites
 
 - Latest [neofs-cli](https://github.com/nspcc-dev/neofs-node)
-- [UN/LOCODE](https://unece.org/trade/cefact/UNLOCODE-Download) 
+- [UN/LOCODE](https://unece.org/trade/cefact/UNLOCODE-Download)
   database in CSV format
 - [OpenFlight Airports](https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat)
   database
@@ -63,12 +63,12 @@ Flags:
       --in strings          List of paths to UN/LOCODE tables (csv)
       --out string          Target path for generated database
       --subdiv string       Path to UN/LOCODE subdivision database (csv)
-      
+
 $ ./neofs-cli util locode generate \
   --airports airports.dat \
   --continents continents.geojson \
   --countries countries.dat \
-  --in 2020-2\ UNLOCODE\ CodeListPart1.csv,2020-2\ UNLOCODE\ CodeListPart2.csv,2020-2\ UNLOCODE\ CodeListPart3.csv \
+  --in 2022-1\ UNLOCODE\ CodeListPart1.csv,2022-1\ UNLOCODE\ CodeListPart2.csv,2022-1\ UNLOCODE\CodeListPart3.csv \
   --subdiv 2020-2\ SubdivisionCodes.csv \
   --out locode_db
 ```
@@ -82,7 +82,25 @@ Country: Russia
 Location: Saint Petersburg (ex Leningrad)
 Continent: Europe
 Subdivision: [SPE] Sankt-Peterburg
-Coordinates: 59.53, 30.15
+Coordinates: 59.88, 30.25
+```
+
+# Building Debian package
+
+The most simple way is to run a make target
+
+```shell
+$ make debpackage
+```
+
+When packages are built, you can clean up the leftover with
+
+```shell
+$ dh clean
+```
+or
+```shell
+$ make debclean
 ```
 
 
