@@ -30,7 +30,17 @@ more in [NeoFS Specification](https://github.com/nspcc-dev/neofs-spec).
 - [OpenFlight Countries](https://raw.githubusercontent.com/jpatokal/openflights/master/data/countries.dat)
   database
 
-## Run
+## Quick start
+
+Just run `make` to generate `locode_db` file for use with NeoFS InnerRing nodes.
+
+``` shell
+$ make
+...
+--out locode_db
+```
+
+## Building
 
 First unzip file with GeoJSON continents from this repository.
 ```
