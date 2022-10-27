@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_OPTIONS := nostrip nocheck
+
+%:
+	dh $@
+
+override_dh_auto_build:		
+	$(MAKE) all
+
+override_dh_installchangelogs:
+	dh_installchangelogs -k CHANGELOG.md
+
+override_dh_clean:
+	dh_clean
+	rm -f locode_db		
+		

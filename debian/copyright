@@ -1,0 +1,11 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: neofs-locode-db
+Upstream-Contact: tech@nspcc.ru
+Source: https://github.com/nspcc-dev/neofs-locode-db
+
+Files: *
+Copyright: 2018-2022 NeoSPCC (@nspcc-dev)
+
+License: CC-BY-SA-4.0
+ This project is licensed under the CC Attribution-ShareAlike 4.0 International
+ https://creativecommons.org/licenses/by-sa/4.0/legalcode
