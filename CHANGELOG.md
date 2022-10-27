@@ -1,6 +1,15 @@
 # Changelog
 Changelog for NeoFS LOCODE database
 
+## 0.3.0 - 2022-10-28
+
+### Changed
+- Added Makefile to simplify DB build (#9)
+- Added .deb packages support (#11)
+
+### Updated
+- UN/LOCODE to `2022-1` version
+
 ## 0.2.1 - 2021-11-02
 
 ### Changed
