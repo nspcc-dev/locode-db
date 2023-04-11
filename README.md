@@ -68,7 +68,7 @@ $ ./neofs-cli util locode generate \
   --airports airports.dat \
   --continents continents.geojson \
   --countries countries.dat \
-  --in 2022-1\ UNLOCODE\ CodeListPart1.csv,2022-1\ UNLOCODE\ CodeListPart2.csv,2022-1\ UNLOCODE\CodeListPart3.csv \
+  --in 2022-2\ UNLOCODE\ CodeListPart1.csv,2022-2\ UNLOCODE\ CodeListPart2.csv,2022-1\ UNLOCODE\CodeListPart3.csv \
   --subdiv 2020-2\ SubdivisionCodes.csv \
   --out locode_db
 ```

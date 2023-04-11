@@ -1,6 +1,11 @@
 # Changelog
 Changelog for NeoFS LOCODE database
 
+## 0.4.0 - 2023-04-11
+
+### Updated
+- UN/LOCODE to `2022-2` version
+
 ## 0.3.0 - 2022-10-28
 
 ### Changed
