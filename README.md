@@ -87,5 +87,5 @@ Coordinates: 59.88, 30.25
 
 ## License
 
-This project is licensed under the CC Attribution-ShareAlike 4.0 International -
-see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT license - see the [LICENSE.md](LICENSE.md)
+file for details.
