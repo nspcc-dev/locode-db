@@ -3,17 +3,11 @@
 VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8 2>/dev/null || cat VERSION 2>/dev/null || echo "develop")"
 NEOFSCLI ?= neofs-cli
 
-.PHONY: all clean version help unlocode debpackage
+.PHONY: all clean version help unlocode
 
 DIRS = in tmp
 
 space := $(subst ,, )
-
-# .deb package versioning
-OS_RELEASE = $(shell lsb_release -cs)
-PKG_VERSION ?= $(shell echo $(VERSION) | sed "s/^v//" | \
-	sed -E "s/(.*)-(g[a-fA-F0-9]{6,8})(.*)/\1\3~\2/" | \
-	sed "s/-/~/")-${OS_RELEASE}
 
 all: $(DIRS) locode_db
 
@@ -63,16 +57,3 @@ clean:
 	rm -f in/*
 	rm -f tmp/*
 	rm -f locode_db
-
-# Package for Debian
-debpackage:
-	dch --package neofs-locode-db \
-		--controlmaint \
-		--newversion $(PKG_VERSION) \
-		--force-bad-version \
-		--distribution $(OS_RELEASE) \
-		"Please see CHANGELOG.md for code changes for $(VERSION)"
-	dpkg-buildpackage --no-sign -b
-
-debclean:
-	dh clean
