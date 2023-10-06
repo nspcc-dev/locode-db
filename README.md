@@ -85,26 +85,7 @@ Subdivision: [SPE] Sankt-Peterburg
 Coordinates: 59.88, 30.25
 ```
 
-# Building Debian package
-
-The most simple way is to run a make target
-
-```shell
-$ make debpackage
-```
-
-When packages are built, you can clean up the leftover with
-
-```shell
-$ dh clean
-```
-or
-```shell
-$ make debclean
-```
-
-
 ## License
 
-This project is licensed under the CC Attribution-ShareAlike 4.0 International -
-see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT license - see the [LICENSE.md](LICENSE.md)
+file for details.
