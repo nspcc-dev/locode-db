@@ -26,8 +26,8 @@ geojson: continents.geojson.gz
 	gunzip -c $< > in/continents.geojson
 
 unlocode:
-	wget -c https://service.unece.org/trade/locode/loc222csv.zip -O tmp/loc222csv.zip
-	unzip -u tmp/loc222csv.zip -d in/
+	wget -c https://service.unece.org/trade/locode/loc231csv.zip -O tmp/loc231csv.zip
+	unzip -u tmp/loc231csv.zip -d in/
 
 bin/$(LOCODECLI):
 	go build -o $(LOCODECLI)
@@ -37,8 +37,8 @@ $(LOCODEDB): unlocode geojson in/airports.dat in/countries.dat bin/$(LOCODECLI)
 	--airports in/airports.dat \
 	--continents in/continents.geojson \
 	--countries in/countries.dat \
-	--in in/2022-2\ UNLOCODE\ CodeListPart1.csv,in/2022-2\ UNLOCODE\ CodeListPart2.csv,in/2022-2\ UNLOCODE\ CodeListPart3.csv \
-	--subdiv in/2022-2\ SubdivisionCodes.csv \
+	--in in/2023-1\ UNLOCODE\ CodeListPart1.csv,in/2023-1\ UNLOCODE\ CodeListPart2.csv,in/2023-1\ UNLOCODE\ CodeListPart3.csv \
+	--subdiv in/2023-1\ SubdivisionCodes.csv \
 	--out $(LOCODEDB)
 	chmod 644 $(LOCODEDB)
 
