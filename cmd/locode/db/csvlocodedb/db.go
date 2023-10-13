@@ -1,10 +1,10 @@
-package locodebolt
+package csvlocodedb
 
 import (
 	"fmt"
 	"io/fs"
-
-	"go.etcd.io/bbolt"
+	"os"
+	"path/filepath"
 )
 
 // Prm groups the required parameters of the DB's constructor.
@@ -13,32 +13,26 @@ import (
 // Passing incorrect parameter values will result in constructor
 // failure (error or panic depending on the implementation).
 type Prm struct {
-	// Path to BoltDB file with NeoFS location database.
+	// Path to result directory with location database.
 	//
 	// Must not be empty.
-	Path string
+	Path              string
+	PathCSVLocode     string
+	PathCSVCountries  string
+	PathCSVContinents string
 }
 
-// DB is a descriptor of the NeoFS BoltDB location database.
+// DB is a descriptor of the location database.
 //
 // For correct operation, DB must be created
 // using the constructor (New) based on the required parameters
 // and optional components.
-//
-// After successful creation,
-// DB must be opened through Open call. After successful opening,
-// DB is ready to work through API (until Close call).
-//
-// Upon completion of work with the DB, it must be closed
-// by Close method.
 type DB struct {
-	path string
-
-	mode fs.FileMode
-
-	boltOpts *bbolt.Options
-
-	bolt *bbolt.DB
+	mode              fs.FileMode
+	path              string
+	pathCSVLocode     string
+	pathCSVCountries  string
+	pathCSVContinents string
 }
 
 const invalidPrmValFmt = "invalid parameter %s (%T):%v"
@@ -58,7 +52,14 @@ func New(prm Prm, opts ...Option) *DB {
 	case prm.Path == "":
 		panicOnPrmValue("Path", prm.Path)
 	}
+	fileInfo, err := os.Stat(prm.Path)
+	if err != nil {
+		panicOnPrmValue("Error checking path: ", err.Error())
+	}
 
+	if !fileInfo.IsDir() {
+		panicOnPrmValue("path is not a directory: ", prm.Path)
+	}
 	o := defaultOpts()
 
 	for i := range opts {
@@ -66,8 +67,10 @@ func New(prm Prm, opts ...Option) *DB {
 	}
 
 	return &DB{
-		path:     prm.Path,
-		mode:     o.mode,
-		boltOpts: o.boltOpts,
+		mode:              o.mode,
+		path:              prm.Path,
+		pathCSVLocode:     filepath.Join(prm.Path, o.PathCSVLocode),
+		pathCSVCountries:  filepath.Join(prm.Path, o.PathCSVCountries),
+		pathCSVContinents: filepath.Join(prm.Path, o.PathCSVContinents),
 	}
 }

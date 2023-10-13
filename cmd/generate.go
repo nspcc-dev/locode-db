@@ -3,8 +3,8 @@ package cmd
 import (
 	locodedb "github.com/nspcc-dev/locode-db/cmd/locode/db"
 	airportsdb "github.com/nspcc-dev/locode-db/cmd/locode/db/airports"
-	locodebolt "github.com/nspcc-dev/locode-db/cmd/locode/db/boltdb"
 	continentsdb "github.com/nspcc-dev/locode-db/cmd/locode/db/continents/geojson"
+	"github.com/nspcc-dev/locode-db/cmd/locode/db/csvlocodedb"
 	csvlocode "github.com/nspcc-dev/locode-db/cmd/locode/table/csv"
 	"github.com/spf13/cobra"
 )
@@ -33,7 +33,7 @@ var (
 
 	locodeGenerateCmd = &cobra.Command{
 		Use:   "generate",
-		Short: "Generate UN/LOCODE database for NeoFS",
+		Short: "Generate UN/LOCODE database",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, _ []string) {
 			locodeDB := csvlocode.New(
@@ -53,23 +53,16 @@ var (
 				Path: locodeGenerateContinentsPath,
 			})
 
-			targetDB := locodebolt.New(locodebolt.Prm{
+			targetDB := csvlocodedb.New(csvlocodedb.Prm{
 				Path: locodeGenerateOutPath,
 			})
-
-			err := targetDB.Open()
-			if err != nil {
-				cmd.PrintErrln(err)
-			}
-
-			defer targetDB.Close()
 
 			names := &namesDB{
 				DB:    airportDB,
 				Table: locodeDB,
 			}
 
-			err = locodedb.FillDatabase(locodeDB, airportDB, continentsDB, names, targetDB)
+			err := locodedb.FillDatabase(locodeDB, airportDB, continentsDB, names, targetDB)
 			if err != nil {
 				cmd.PrintErrln(err)
 			}
@@ -95,6 +88,6 @@ func initUtilLocodeGenerateCmd() {
 	flags.StringVar(&locodeGenerateContinentsPath, locodeGenerateContinentsFlag, "", "Path to continent polygons (GeoJSON)")
 	_ = locodeGenerateCmd.MarkFlagRequired(locodeGenerateContinentsFlag)
 
-	flags.StringVar(&locodeGenerateOutPath, locodeGenerateOutputFlag, "", "Target path for generated database")
+	flags.StringVar(&locodeGenerateOutPath, locodeGenerateOutputFlag, "", "Target path for generated database (directory))")
 	_ = locodeGenerateCmd.MarkFlagRequired(locodeGenerateOutputFlag)
 }

@@ -2,15 +2,15 @@
 
 VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8 2>/dev/null || cat VERSION 2>/dev/null || echo "develop")"
 LOCODECLI ?= locode-db
-LOCODEDB ?= locode_db
+LOCODEDB ?= locodedb
 
 .PHONY: all clean version help unlocode
 
-DIRS = in tmp
+DIRS = in tmp ${LOCODEDB}
 
 space := $(subst ,, )
 
-all: $(DIRS) locode_db
+all: $(DIRS) generate
 
 $(DIRS):
 	@echo "⇒ Ensure dir: $@"
@@ -32,7 +32,7 @@ unlocode:
 bin/$(LOCODECLI):
 	go build -o $(LOCODECLI)
 
-$(LOCODEDB): unlocode geojson in/airports.dat in/countries.dat bin/$(LOCODECLI)
+generate: unlocode geojson in/airports.dat in/countries.dat bin/$(LOCODECLI)
 	./$(LOCODECLI) generate \
 	--airports in/airports.dat \
 	--continents in/continents.geojson \
@@ -60,6 +60,6 @@ help:
 clean:
 	rm -f in/*
 	rm -f tmp/*
-	rm -f $(LOCODEDB)
+	rm -rf $(LOCODEDB)
 	rm -rf bin
 
