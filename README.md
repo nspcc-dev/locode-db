@@ -11,18 +11,12 @@
 
 # Overview
 
-This repository contains instructions to generate UN/LOCODE database for NeoFS
-and raw representation of it. NeoFS uses UN/LOCODE in storage node attributes
-and storage policies. Inner ring nodes converts UN/LOCODE into human-readable
-set of attributes such as continent, country name, etc. You can find out
-more in [NeoFS Specification](https://github.com/nspcc-dev/neofs-spec).
+This repository contains package for getting additional information about continent, country code and name, location, geo-position, subdivision based on locode.
 
-
-# Build
+[Locodes](https://github.com/nspcc-dev/locode-db/locodedb/locodes.csv.gz) and [countries](https://github.com/nspcc-dev/locode-db/locodedb/countries.csv.gz) databases can be regenerated using locode-db CLI command.
 
 ## Prerequisites
 
-- Latest [neofs-cli](https://github.com/nspcc-dev/neofs-node)
 - [UN/LOCODE](https://unece.org/trade/cefact/UNLOCODE-Download)
   database in CSV format
 - [OpenFlight Airports](https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat)
@@ -32,59 +26,11 @@ more in [NeoFS Specification](https://github.com/nspcc-dev/neofs-spec).
 
 ## Quick start
 
-Just run `make` to generate `locode_db` file for use with NeoFS InnerRing nodes.
+Just run `make` to regenerate CSV files with [locodes](https://github.com/nspcc-dev/locode-db/locodedb/locodes.csv.gz) and [countries](https://github.com/nspcc-dev/locode-db/locodedb/countries.csv.gz).
 
 ``` shell
 $ make
-...
---out locode_db
 ```
-
-## Building
-
-First unzip file with GeoJSON continents from this repository.
-```
-$ gunzip continents.geojson
-```
-
-Then run neofs-cli command to generate boltDB file.
-```
-$ neofs-cli util locode generate --help
-generate UN/LOCODE database for NeoFS
-
-Usage:
-  neofs-cli util locode generate [flags]
-
-Flags:
-      --airports string     Path to OpenFlights airport database (csv)
-      --continents string   Path to continent polygons (GeoJSON)
-      --countries string    Path to OpenFlights country database (csv)
-  -h, --help                help for generate
-      --in strings          List of paths to UN/LOCODE tables (csv)
-      --out string          Target path for generated database
-      --subdiv string       Path to UN/LOCODE subdivision database (csv)
-
-$ ./neofs-cli util locode generate \
-  --airports airports.dat \
-  --continents continents.geojson \
-  --countries countries.dat \
-  --in 2022-2\ UNLOCODE\ CodeListPart1.csv,2022-2\ UNLOCODE\ CodeListPart2.csv,2022-1\ UNLOCODE\CodeListPart3.csv \
-  --subdiv 2020-2\ SubdivisionCodes.csv \
-  --out locode_db
-```
-
-**Database generation might take some time!**
-
-You can test generated database with neofs-cli.
-```
-$ neofs-cli util locode info --db locode_db --locode 'RU LED'
-Country: Russia
-Location: Saint Petersburg (ex Leningrad)
-Continent: Europe
-Subdivision: [SPE] Sankt-Peterburg
-Coordinates: 59.88, 30.25
-```
-
 ## License
 
 This project is licensed under the MIT license - see the [LICENSE.md](LICENSE.md)
