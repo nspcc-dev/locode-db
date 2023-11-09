@@ -2,15 +2,15 @@
 
 VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8 2>/dev/null || cat VERSION 2>/dev/null || echo "develop")"
 LOCODECLI ?= locode-db
-LOCODEDB ?= locode_db
+LOCODEDB ?= pkg/locodedb/data
 
-.PHONY: all clean version help unlocode
+.PHONY: all clean version help unlocode generate
 
-DIRS = in tmp
+DIRS = in tmp ${LOCODEDB}
 
 space := $(subst ,, )
 
-all: $(DIRS) locode_db
+all: $(DIRS) gzip_locodedb
 
 $(DIRS):
 	@echo "⇒ Ensure dir: $@"
@@ -29,10 +29,10 @@ unlocode:
 	wget -c https://service.unece.org/trade/locode/loc231csv.zip -O tmp/loc231csv.zip
 	unzip -u tmp/loc231csv.zip -d in/
 
-bin/$(LOCODECLI):
-	go build -o $(LOCODECLI)
+$(LOCODECLI):
+	go build -o $(LOCODECLI) ./internal
 
-$(LOCODEDB): unlocode geojson in/airports.dat in/countries.dat bin/$(LOCODECLI)
+generate: unlocode geojson in/airports.dat in/countries.dat $(LOCODECLI) $(DIRS)
 	./$(LOCODECLI) generate \
 	--airports in/airports.dat \
 	--continents in/continents.geojson \
@@ -40,7 +40,15 @@ $(LOCODEDB): unlocode geojson in/airports.dat in/countries.dat bin/$(LOCODECLI)
 	--in in/2023-1\ UNLOCODE\ CodeListPart1.csv,in/2023-1\ UNLOCODE\ CodeListPart2.csv,in/2023-1\ UNLOCODE\ CodeListPart3.csv \
 	--subdiv in/2023-1\ SubdivisionCodes.csv \
 	--out $(LOCODEDB)
-	chmod 644 $(LOCODEDB)
+
+gzip_locodedb: generate
+	@echo "⇒ Gzipping files inside $(LOCODEDB)"
+	@for file in $(LOCODEDB)/*.csv; do \
+	    if [ -f "$$file" ]; then \
+	        gzip -cf "$$file" > "$$file.gz"; \
+	        rm "$$file"; \
+	    fi \
+	done
 
 # Print version
 version:
@@ -60,6 +68,5 @@ help:
 clean:
 	rm -f in/*
 	rm -f tmp/*
-	rm -f $(LOCODEDB)
-	rm -rf bin
+	rm -f $(LOCODECLI)
 
