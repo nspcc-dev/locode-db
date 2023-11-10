@@ -6,6 +6,7 @@ require (
 	github.com/paulmach/orb v0.10.0
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
+	golang.org/x/text v0.3.7
 )
 
 require (
