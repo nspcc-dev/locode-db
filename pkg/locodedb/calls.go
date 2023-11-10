@@ -24,7 +24,14 @@ func Get(locodeStr string) (Record, error) {
 		return Record{}, err
 	}
 
-	key, err := NewKey(locodeStr[:2], locodeStr[2:])
+	country := locodeStr[:2]
+	location := locodeStr[2:]
+
+	if locodeStr[2] == ' ' {
+		location = locodeStr[3:]
+	}
+
+	key, err := NewKey(country, location)
 	if err != nil {
 		return Record{}, err
 	}
