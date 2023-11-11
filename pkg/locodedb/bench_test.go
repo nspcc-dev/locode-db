@@ -28,3 +28,17 @@ func BenchmarkUnpack(b *testing.B) {
 		require.NoError(b, err)
 	}
 }
+
+func BenchmarkGet(b *testing.B) {
+	require.NoError(b, initLocodeData())
+	_, err := Get("RU MOW")
+	require.NoError(b, err)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = Get("RU MOW")
+		_, _ = Get("AAAAA")
+		_, _ = Get("SESTO")
+		_, _ = Get("FRXGS")
+		_, _ = Get("JOSAH")
+	}
+}

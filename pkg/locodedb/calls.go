@@ -24,30 +24,32 @@ func Get(locodeStr string) (Record, error) {
 		return Record{}, err
 	}
 
-	country := locodeStr[:2]
-	location := locodeStr[2:]
-
-	if locodeStr[2] == ' ' {
-		location = locodeStr[3:]
+	if len(locodeStr) == CountryCodeLen+LocationCodeLen+1 && locodeStr[CountryCodeLen] == ' ' {
+		locodeStr = locodeStr[:CountryCodeLen] + locodeStr[CountryCodeLen+1:]
+	}
+	if len(locodeStr) != CountryCodeLen+LocationCodeLen {
+		return Record{}, ErrInvalidString
 	}
 
-	key, err := NewKey(country, location)
-	if err != nil {
-		return Record{}, err
+	for i := range locodeStr[:CountryCodeLen] {
+		if !isUpperAlpha(locodeStr[i]) {
+			return Record{}, ErrInvalidString
+		}
 	}
-	return getFromKey(*key)
-}
+	for i := range locodeStr[CountryCodeLen:] {
+		if !isUpperAlpha(locodeStr[CountryCodeLen+i]) && !isDigit(locodeStr[CountryCodeLen+i]) {
+			return Record{}, ErrInvalidString
+		}
+	}
 
-// getFromKey returns a record for a given Key.
-func getFromKey(key Key) (Record, error) {
-	newlocode := key.CountryCode().String() + key.LocationCode().String()
-
-	locodeCSV, found := mLocodes[newlocode]
+	locodeCSV, found := mLocodes[locodeStr]
 	if !found {
 		return Record{}, ErrNotFound
 	}
 
-	country, countryFound := mCountries[*key.CountryCode()]
+	cc := CountryCode{}
+	copy(cc[:], locodeStr[:2])
+	country, countryFound := mCountries[cc]
 	if !countryFound {
 		return Record{}, ErrNotFound
 	}
