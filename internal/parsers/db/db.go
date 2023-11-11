@@ -94,7 +94,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 		dbRecord := locodedb.Record{
 			Location:   tableRecord.NameWoDiacritics,
 			SubDivCode: tableRecord.SubDiv,
-			Point:      geoPoint,
+			Point:      *geoPoint,
 		}
 
 		countryName := ""
@@ -113,7 +113,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			countryName = airportRecord.CountryName
 		}
 
-		dbRecord.Point = geoPoint
+		dbRecord.Point = *geoPoint
 
 		if countryName == "" {
 			countryName, err = names.CountryName(dbKey.CountryCode())
@@ -148,7 +148,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			return nil
 		}
 
-		dbRecord.Cont = continent
+		dbRecord.Cont = *continent
 
 		newData = append(newData, Data{*dbKey, dbRecord})
 

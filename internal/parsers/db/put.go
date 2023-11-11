@@ -47,7 +47,7 @@ func (db *CsvDB) Put(data []Data) error {
 			key.CountryCode().String(),
 			key.LocationCode().String(),
 			rec.Location,
-			strconv.Itoa(int(*rec.Cont)),
+			strconv.Itoa(int(rec.Cont)),
 			rec.SubDivCode,
 			rec.SubDivName,
 			strconv.FormatFloat(rec.Point.Latitude(), 'f', -1, 64),

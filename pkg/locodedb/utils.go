@@ -37,8 +37,8 @@ type locodesCSV struct {
 	locationName string
 	subDivCode   string
 	subDivName   string
-	point        *Point
-	continent    *Continent
+	point        Point
+	continent    Continent
 }
 
 func unpackCountriesData(data []byte) (map[CountryCode]string, error) {
@@ -100,14 +100,12 @@ func unpackLocodesData(data []byte) (map[string]locodesCSV, error) {
 			return m, err
 		}
 
-		geoPoint := NewPoint(lat, lon)
-
 		m[countryCode.String()+locationCode.String()] = locodesCSV{
 			locationName: record[2],
-			continent:    &continent,
+			continent:    continent,
 			subDivCode:   subDivCode,
 			subDivName:   subDivName,
-			point:        geoPoint,
+			point:        Point{lat: lat, lng: lon},
 		}
 	}
 	return m, nil

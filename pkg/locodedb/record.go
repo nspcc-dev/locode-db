@@ -46,6 +46,6 @@ type Record struct {
 	Location   string
 	SubDivName string
 	SubDivCode string
-	Point      *Point
-	Cont       *Continent
+	Point      Point
+	Cont       Continent
 }
