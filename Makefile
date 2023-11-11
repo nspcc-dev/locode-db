@@ -10,7 +10,7 @@ DIRS = in tmp ${LOCODEDB}
 
 space := $(subst ,, )
 
-all: $(DIRS) gzip_locodedb
+all: $(DIRS) compress_locodedb
 
 $(DIRS):
 	@echo "⇒ Ensure dir: $@"
@@ -41,11 +41,11 @@ generate: unlocode geojson in/airports.dat in/countries.dat $(LOCODECLI) $(DIRS)
 	--subdiv in/2023-1\ SubdivisionCodes.csv \
 	--out $(LOCODEDB)
 
-gzip_locodedb: generate
-	@echo "⇒ Gzipping files inside $(LOCODEDB)"
+compress_locodedb: generate
+	@echo "⇒ Compressing files inside $(LOCODEDB)"
 	@for file in $(LOCODEDB)/*.csv; do \
 	    if [ -f "$$file" ]; then \
-	        gzip -cf "$$file" > "$$file.gz"; \
+	        bzip2 -cf "$$file" > "$$file.bz2"; \
 	        rm "$$file"; \
 	    fi \
 	done

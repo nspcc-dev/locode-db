@@ -2,7 +2,7 @@ package locodedb
 
 import (
 	"bytes"
-	"compress/gzip"
+	"compress/bzip2"
 	_ "embed"
 	"encoding/csv"
 	"io"
@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	//go:embed data/countries.csv.gz
+	//go:embed data/countries.csv.bz2
 	countriesData []byte
 
-	//go:embed data/locodes.csv.gz
+	//go:embed data/locodes.csv.bz2
 	locodesData []byte
 
 	locodeDataOnce sync.Once
@@ -44,13 +44,8 @@ type locodesCSV struct {
 func unpackCountriesData(data []byte) (map[CountryCode]string, error) {
 	m := make(map[CountryCode]string)
 
-	gzReader, err := gzip.NewReader(bytes.NewReader(data))
-	if err != nil {
-		return m, err
-	}
-	defer gzReader.Close()
-
-	reader := csv.NewReader(gzReader)
+	zReader := bzip2.NewReader(bytes.NewReader(data))
+	reader := csv.NewReader(zReader)
 
 	for {
 		record, err := reader.Read()
@@ -70,13 +65,8 @@ func unpackCountriesData(data []byte) (map[CountryCode]string, error) {
 
 func unpackLocodesData(data []byte) (map[string]locodesCSV, error) {
 	m := make(map[string]locodesCSV)
-	gzReader, err := gzip.NewReader(bytes.NewReader(data))
-	if err != nil {
-		return m, err
-	}
-	defer gzReader.Close()
-
-	reader := csv.NewReader(gzReader)
+	zReader := bzip2.NewReader(bytes.NewReader(data))
+	reader := csv.NewReader(zReader)
 
 	for {
 		record, err := reader.Read()
