@@ -91,12 +91,6 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			return fmt.Errorf("could not parse geo point: %w", err)
 		}
 
-		dbRecord := locodedb.Record{
-			Location:   tableRecord.NameWoDiacritics,
-			SubDivCode: tableRecord.SubDiv,
-			Point:      *geoPoint,
-		}
-
 		countryName := ""
 
 		if geoPoint == nil {
@@ -113,7 +107,11 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			countryName = airportRecord.CountryName
 		}
 
-		dbRecord.Point = *geoPoint
+		dbRecord := locodedb.Record{
+			Location:   tableRecord.NameWoDiacritics,
+			SubDivCode: tableRecord.SubDiv,
+			Point:      *geoPoint,
+		}
 
 		if countryName == "" {
 			countryName, err = names.CountryName(dbKey.CountryCode())

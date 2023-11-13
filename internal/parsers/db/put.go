@@ -44,8 +44,7 @@ func (db *CsvDB) Put(data []Data) error {
 		uniqueKeys[keyString] = struct{}{}
 
 		newRecord := []string{
-			key.CountryCode().String(),
-			key.LocationCode().String(),
+			keyString,
 			rec.Location,
 			strconv.Itoa(int(rec.Cont)),
 			rec.SubDivCode,

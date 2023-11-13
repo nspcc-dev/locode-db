@@ -88,44 +88,37 @@ func unpackLocodesData(data []byte) (string, map[string]locodesCSV, error) {
 			return "", nil, err
 		}
 
-		countryCode, err := CountryCodeFromString(record[0])
-		if err != nil {
-			return "", nil, err
-		}
-		locationCode, err := LocationCodeFromString(record[1])
-		if err != nil {
-			return "", nil, err
-		}
+		key := strings.Clone(record[0])
 
-		if len(record[2]) > math.MaxUint8 || len(record[4]) > math.MaxUint8 || len(record[5]) > math.MaxUint8 {
+		if len(record[1]) > math.MaxUint8 || len(record[3]) > math.MaxUint8 || len(record[4]) > math.MaxUint8 {
 			return "", nil, errors.New("record string uint8 overflow")
 		}
 
-		var location = offLen{offset: uint32(b.Len()), length: uint8(len(record[2]))}
-		b.WriteString(record[2])
+		var location = offLen{offset: uint32(b.Len()), length: uint8(len(record[1]))}
+		b.WriteString(record[1])
 
-		var subDivCode = offLen{offset: uint32(b.Len()), length: uint8(len(record[4]))}
+		var subDivCode = offLen{offset: uint32(b.Len()), length: uint8(len(record[3]))}
+		b.WriteString(record[3])
+
+		var subDivName = offLen{offset: uint32(b.Len()), length: uint8(len(record[4]))}
 		b.WriteString(record[4])
-
-		var subDivName = offLen{offset: uint32(b.Len()), length: uint8(len(record[5]))}
-		b.WriteString(record[5])
 
 		if b.Len() > math.MaxInt32 {
 			return "", nil, errors.New("string buffer int32 overflow")
 		}
-		cont, _ := strconv.ParseUint(record[3], 10, 8)
+		cont, _ := strconv.ParseUint(record[2], 10, 8)
 		var continent = Continent(uint8(cont))
 
-		lat, err := strconv.ParseFloat(record[6], 64)
+		lat, err := strconv.ParseFloat(record[5], 64)
 		if err != nil {
 			return "", nil, err
 		}
-		lon, err := strconv.ParseFloat(record[7], 64)
+		lon, err := strconv.ParseFloat(record[6], 64)
 		if err != nil {
 			return "", nil, err
 		}
 
-		m[countryCode.String()+locationCode.String()] = locodesCSV{
+		m[key] = locodesCSV{
 			locationName: location,
 			continent:    continent,
 			subDivCode:   subDivCode,
