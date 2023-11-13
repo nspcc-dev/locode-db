@@ -43,6 +43,7 @@ type offLen struct {
 
 type locodesCSV struct {
 	point        Point
+	locode       offLen
 	locationName offLen
 	subDivCode   offLen
 	subDivName   offLen
@@ -71,10 +72,10 @@ func unpackCountriesData(data []byte) (map[CountryCode]string, error) {
 	return m, nil
 }
 
-func unpackLocodesData(data []byte) (string, map[string]locodesCSV, error) {
+func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
 	var (
 		b       strings.Builder
-		m       = make(map[string]locodesCSV)
+		m       []locodesCSV
 		zReader = bzip2.NewReader(bytes.NewReader(data))
 		reader  = csv.NewReader(zReader)
 	)
@@ -88,7 +89,8 @@ func unpackLocodesData(data []byte) (string, map[string]locodesCSV, error) {
 			return "", nil, err
 		}
 
-		key := strings.Clone(record[0])
+		var locode = offLen{offset: uint32(b.Len()), length: uint8(len(record[0]))}
+		b.WriteString(record[0])
 
 		if len(record[1]) > math.MaxUint8 || len(record[3]) > math.MaxUint8 || len(record[4]) > math.MaxUint8 {
 			return "", nil, errors.New("record string uint8 overflow")
@@ -118,13 +120,14 @@ func unpackLocodesData(data []byte) (string, map[string]locodesCSV, error) {
 			return "", nil, err
 		}
 
-		m[key] = locodesCSV{
+		m = append(m, locodesCSV{
 			locationName: location,
+			locode:       locode,
 			continent:    continent,
 			subDivCode:   subDivCode,
 			subDivName:   subDivName,
 			point:        Point{lat: lat, lng: lon},
-		}
+		})
 	}
 	return b.String(), m, nil
 }

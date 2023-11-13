@@ -2,6 +2,8 @@ package locodedb
 
 import (
 	"errors"
+	"sort"
+	"strings"
 )
 
 // ErrNotFound is returned when the record is not found in the location database.
@@ -14,10 +16,8 @@ var (
 	// mCountries is a map of country codes to country names.
 	mCountries map[CountryCode]string
 
-	// mLocodes is a map of location codes to location records. The location code is a concatenation of the country code
-	// and the location code. The Record contains country name, the location name, the subdivision name, the subdivision
-	// code, the Point and the Continent.
-	mLocodes map[string]locodesCSV
+	// mLocodes is a slice of location code data.
+	mLocodes []locodesCSV
 )
 
 // Get returns a record for a given locode string. The string must be 5 letters long. The first 2 letters are the country
@@ -45,8 +45,11 @@ func Get(locodeStr string) (Record, error) {
 		}
 	}
 
-	locodeCSV, found := mLocodes[locodeStr]
-	if !found {
+	n := sort.Search(len(mLocodes), func(i int) bool {
+		cmp := strings.Compare(locodeSubstr(mLocodes[i].locode), locodeStr)
+		return cmp >= 0
+	})
+	if n == len(mLocodes) || strings.Compare(locodeSubstr(mLocodes[n].locode), locodeStr) != 0 {
 		return Record{}, ErrNotFound
 	}
 
@@ -59,11 +62,11 @@ func Get(locodeStr string) (Record, error) {
 
 	return Record{
 		Country:    country,
-		Location:   locodeSubstr(locodeCSV.locationName),
-		SubDivName: locodeSubstr(locodeCSV.subDivName),
-		SubDivCode: locodeSubstr(locodeCSV.subDivCode),
-		Point:      locodeCSV.point,
-		Cont:       locodeCSV.continent,
+		Location:   locodeSubstr(mLocodes[n].locationName),
+		SubDivName: locodeSubstr(mLocodes[n].subDivName),
+		SubDivCode: locodeSubstr(mLocodes[n].subDivCode),
+		Point:      mLocodes[n].point,
+		Cont:       mLocodes[n].continent,
 	}, nil
 }
 
