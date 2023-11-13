@@ -8,6 +8,9 @@ import (
 var ErrNotFound = errors.New("record not found")
 
 var (
+	// locodeStrings is a string containing all substrings of locode data.
+	locodeStrings string
+
 	// mCountries is a map of country codes to country names.
 	mCountries map[CountryCode]string
 
@@ -56,10 +59,14 @@ func Get(locodeStr string) (Record, error) {
 
 	return Record{
 		Country:    country,
-		Location:   locodeCSV.locationName,
-		SubDivName: locodeCSV.subDivName,
-		SubDivCode: locodeCSV.subDivCode,
+		Location:   locodeSubstr(locodeCSV.locationName),
+		SubDivName: locodeSubstr(locodeCSV.subDivName),
+		SubDivCode: locodeSubstr(locodeCSV.subDivCode),
 		Point:      locodeCSV.point,
 		Cont:       locodeCSV.continent,
 	}, nil
+}
+
+func locodeSubstr(ol offLen) string {
+	return locodeStrings[int(ol.offset) : int(ol.offset)+int(ol.length)]
 }

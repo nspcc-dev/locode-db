@@ -5,8 +5,11 @@ import (
 	"compress/bzip2"
 	_ "embed"
 	"encoding/csv"
+	"errors"
 	"io"
+	"math"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -27,17 +30,22 @@ func initLocodeData() (err error) {
 			return
 		}
 		countriesData = nil
-		mLocodes, err = unpackLocodesData(locodesData)
+		locodeStrings, mLocodes, err = unpackLocodesData(locodesData)
 		locodesData = nil
 	})
 	return
 }
 
+type offLen struct {
+	offset uint32
+	length uint8 // Likely to be aligned to 32, unfortunately.
+}
+
 type locodesCSV struct {
-	locationName string
-	subDivCode   string
-	subDivName   string
 	point        Point
+	locationName offLen
+	subDivCode   offLen
+	subDivName   offLen
 	continent    Continent
 }
 
@@ -63,50 +71,67 @@ func unpackCountriesData(data []byte) (map[CountryCode]string, error) {
 	return m, nil
 }
 
-func unpackLocodesData(data []byte) (map[string]locodesCSV, error) {
-	m := make(map[string]locodesCSV)
-	zReader := bzip2.NewReader(bytes.NewReader(data))
-	reader := csv.NewReader(zReader)
+func unpackLocodesData(data []byte) (string, map[string]locodesCSV, error) {
+	var (
+		b       strings.Builder
+		m       = make(map[string]locodesCSV)
+		zReader = bzip2.NewReader(bytes.NewReader(data))
+		reader  = csv.NewReader(zReader)
+	)
+	reader.ReuseRecord = true
 
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return m, err
+			return "", nil, err
 		}
 
 		countryCode, err := CountryCodeFromString(record[0])
 		if err != nil {
-			return m, err
+			return "", nil, err
 		}
 		locationCode, err := LocationCodeFromString(record[1])
 		if err != nil {
-			return m, err
+			return "", nil, err
 		}
 
+		if len(record[2]) > math.MaxUint8 || len(record[4]) > math.MaxUint8 || len(record[5]) > math.MaxUint8 {
+			return "", nil, errors.New("record string uint8 overflow")
+		}
+
+		var location = offLen{offset: uint32(b.Len()), length: uint8(len(record[2]))}
+		b.WriteString(record[2])
+
+		var subDivCode = offLen{offset: uint32(b.Len()), length: uint8(len(record[4]))}
+		b.WriteString(record[4])
+
+		var subDivName = offLen{offset: uint32(b.Len()), length: uint8(len(record[5]))}
+		b.WriteString(record[5])
+
+		if b.Len() > math.MaxInt32 {
+			return "", nil, errors.New("string buffer int32 overflow")
+		}
 		cont, _ := strconv.ParseUint(record[3], 10, 8)
 		var continent = Continent(uint8(cont))
 
-		subDivCode := record[4]
-		subDivName := record[5]
-
 		lat, err := strconv.ParseFloat(record[6], 64)
 		if err != nil {
-			return m, err
+			return "", nil, err
 		}
 		lon, err := strconv.ParseFloat(record[7], 64)
 		if err != nil {
-			return m, err
+			return "", nil, err
 		}
 
 		m[countryCode.String()+locationCode.String()] = locodesCSV{
-			locationName: record[2],
+			locationName: location,
 			continent:    continent,
 			subDivCode:   subDivCode,
 			subDivName:   subDivName,
 			point:        Point{lat: lat, lng: lon},
 		}
 	}
-	return m, nil
+	return b.String(), m, nil
 }

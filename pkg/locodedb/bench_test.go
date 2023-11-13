@@ -24,7 +24,7 @@ func BenchmarkUnpack(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, err := unpackCountriesData(testCountriesData)
 		require.NoError(b, err)
-		_, err = unpackLocodesData(testLocodesData)
+		_, _, err = unpackLocodesData(testLocodesData)
 		require.NoError(b, err)
 	}
 }
