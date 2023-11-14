@@ -36,18 +36,13 @@ func initLocodeData() (err error) {
 	return
 }
 
-type offLen struct {
-	offset uint32
-	length uint8 // Likely to be aligned to 32, unfortunately.
-}
-
 type locodesCSV struct {
-	point        Point
-	locode       offLen
-	locationName offLen
-	subDivCode   offLen
-	subDivName   offLen
-	continent    Continent
+	point         Point
+	offset        uint32
+	locationLen   uint8
+	subDivCodeLen uint8
+	subDivNameLen uint8
+	continent     Continent
 }
 
 func unpackCountriesData(data []byte) (map[CountryCode]string, error) {
@@ -89,25 +84,27 @@ func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
 			return "", nil, err
 		}
 
-		var locode = offLen{offset: uint32(b.Len()), length: uint8(len(record[0]))}
-		b.WriteString(record[0])
-
+		if len(record[0]) != CountryCodeLen+LocationCodeLen {
+			return "", nil, errors.New("bad locode record length")
+		}
 		if len(record[1]) > math.MaxUint8 || len(record[3]) > math.MaxUint8 || len(record[4]) > math.MaxUint8 {
 			return "", nil, errors.New("record string uint8 overflow")
 		}
-
-		var location = offLen{offset: uint32(b.Len()), length: uint8(len(record[1]))}
-		b.WriteString(record[1])
-
-		var subDivCode = offLen{offset: uint32(b.Len()), length: uint8(len(record[3]))}
-		b.WriteString(record[3])
-
-		var subDivName = offLen{offset: uint32(b.Len()), length: uint8(len(record[4]))}
-		b.WriteString(record[4])
-
 		if b.Len() > math.MaxInt32 {
 			return "", nil, errors.New("string buffer int32 overflow")
 		}
+		var (
+			recOffset     = uint32(b.Len())
+			locationLen   = uint8(len(record[1]))
+			subDivCodeLen = uint8(len(record[3]))
+			subDivNameLen = uint8(len(record[4]))
+		)
+
+		b.WriteString(record[0])
+		b.WriteString(record[1])
+		b.WriteString(record[3])
+		b.WriteString(record[4])
+
 		cont, _ := strconv.ParseUint(record[2], 10, 8)
 		var continent = Continent(uint8(cont))
 
@@ -121,12 +118,12 @@ func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
 		}
 
 		m = append(m, locodesCSV{
-			locationName: location,
-			locode:       locode,
-			continent:    continent,
-			subDivCode:   subDivCode,
-			subDivName:   subDivName,
-			point:        Point{lat: lat, lng: lon},
+			point:         Point{lat: lat, lng: lon},
+			offset:        recOffset,
+			locationLen:   locationLen,
+			subDivCodeLen: subDivCodeLen,
+			subDivNameLen: subDivNameLen,
+			continent:     continent,
 		})
 	}
 	return b.String(), m, nil
