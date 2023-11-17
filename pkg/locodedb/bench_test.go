@@ -22,9 +22,9 @@ func BenchmarkUnpack(b *testing.B) {
 	require.NotEmpty(b, testCountriesData)
 	require.NotEmpty(b, testLocodesData)
 	for i := 0; i < b.N; i++ {
-		_, err := unpackCountriesData(testCountriesData)
+		m, err := unpackCountriesData(testCountriesData)
 		require.NoError(b, err)
-		_, _, err = unpackLocodesData(testLocodesData)
+		_, err = unpackLocodesData(testLocodesData, m)
 		require.NoError(b, err)
 	}
 }

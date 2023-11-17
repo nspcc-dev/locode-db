@@ -30,10 +30,15 @@ func initLocodeData() (err error) {
 			return
 		}
 		countriesData = nil
-		locodeStrings, mLocodes, err = unpackLocodesData(locodesData)
+		locodeStrings, err = unpackLocodesData(locodesData, mCountries)
 		locodesData = nil
 	})
 	return
+}
+
+type countryData struct {
+	name    string
+	locodes []locodesCSV
 }
 
 type locodesCSV struct {
@@ -45,8 +50,8 @@ type locodesCSV struct {
 	continent     Continent
 }
 
-func unpackCountriesData(data []byte) (map[CountryCode]string, error) {
-	m := make(map[CountryCode]string)
+func unpackCountriesData(data []byte) (map[CountryCode]countryData, error) {
+	m := make(map[CountryCode]countryData)
 
 	zReader := bzip2.NewReader(bytes.NewReader(data))
 	reader := csv.NewReader(zReader)
@@ -62,15 +67,14 @@ func unpackCountriesData(data []byte) (map[CountryCode]string, error) {
 		if err != nil {
 			return m, err
 		}
-		m[*countryCode] = record[1]
+		m[*countryCode] = countryData{name: record[1]}
 	}
 	return m, nil
 }
 
-func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
+func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, error) {
 	var (
 		b       strings.Builder
-		m       []locodesCSV
 		zReader = bzip2.NewReader(bytes.NewReader(data))
 		reader  = csv.NewReader(zReader)
 	)
@@ -81,17 +85,17 @@ func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return "", nil, err
+			return "", err
 		}
 
 		if len(record[0]) != CountryCodeLen+LocationCodeLen {
-			return "", nil, errors.New("bad locode record length")
+			return "", errors.New("bad locode record length")
 		}
 		if len(record[1]) > math.MaxUint8 || len(record[3]) > math.MaxUint8 || len(record[4]) > math.MaxUint8 {
-			return "", nil, errors.New("record string uint8 overflow")
+			return "", errors.New("record string uint8 overflow")
 		}
 		if b.Len() > math.MaxInt32 {
-			return "", nil, errors.New("string buffer int32 overflow")
+			return "", errors.New("string buffer int32 overflow")
 		}
 		var (
 			recOffset     = uint32(b.Len())
@@ -100,7 +104,7 @@ func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
 			subDivNameLen = uint8(len(record[4]))
 		)
 
-		b.WriteString(record[0])
+		b.WriteString(record[0][CountryCodeLen:])
 		b.WriteString(record[1])
 		b.WriteString(record[3])
 		b.WriteString(record[4])
@@ -110,14 +114,22 @@ func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
 
 		lat, err := strconv.ParseFloat(record[5], 32)
 		if err != nil {
-			return "", nil, err
+			return "", err
 		}
 		lon, err := strconv.ParseFloat(record[6], 32)
 		if err != nil {
-			return "", nil, err
+			return "", err
 		}
 
-		m = append(m, locodesCSV{
+		countryCode, err := CountryCodeFromString(record[0][:CountryCodeLen])
+		if err != nil {
+			return "", err
+		}
+		rec, ok := mc[*countryCode]
+		if !ok {
+			return "", errors.New("invalid country in the DB")
+		}
+		rec.locodes = append(rec.locodes, locodesCSV{
 			point:         Point{Latitude: float32(lat), Longitude: float32(lon)},
 			offset:        recOffset,
 			locationLen:   locationLen,
@@ -125,6 +137,12 @@ func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
 			subDivNameLen: subDivNameLen,
 			continent:     continent,
 		})
+		mc[*countryCode] = rec
 	}
-	return b.String(), m, nil
+	for k := range mc {
+		rec := mc[k]
+		rec.locodes = rec.locodes[:len(rec.locodes):len(rec.locodes)]
+		mc[k] = rec
+	}
+	return b.String(), nil
 }
