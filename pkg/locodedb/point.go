@@ -7,31 +7,14 @@ import (
 
 // Point represents a 2D geographic point.
 type Point struct {
-	lat, lng float64
-}
-
-// NewPoint creates, initializes and returns a new Point.
-func NewPoint(lat, lng float64) *Point {
-	return &Point{
-		lat: lat,
-		lng: lng,
-	}
-}
-
-// Latitude returns the Point's latitude.
-func (p Point) Latitude() float64 {
-	return p.lat
-}
-
-// Longitude returns the Point's longitude.
-func (p Point) Longitude() float64 {
-	return p.lng
+	Latitude  float32
+	Longitude float32
 }
 
 // PointFromCoordinates converts a UN/LOCODE coordinates to a Point.
-func PointFromCoordinates(crd *Coordinates) (*Point, error) {
+func PointFromCoordinates(crd *Coordinates) (Point, error) {
 	if crd == nil {
-		return nil, nil
+		return Point{}, nil
 	}
 
 	cLat := crd.Latitude()
@@ -40,7 +23,7 @@ func PointFromCoordinates(crd *Coordinates) (*Point, error) {
 
 	lat, err := toDecimal(cLatDeg[:], cLatMnt[:])
 	if err != nil {
-		return nil, fmt.Errorf("could not parse latitude: %w", err)
+		return Point{}, fmt.Errorf("could not parse latitude: %w", err)
 	}
 
 	if !cLat.Hemisphere().North() {
@@ -53,16 +36,16 @@ func PointFromCoordinates(crd *Coordinates) (*Point, error) {
 
 	lng, err := toDecimal(cLngDeg[:], cLngMnt[:])
 	if err != nil {
-		return nil, fmt.Errorf("could not parse longitude: %w", err)
+		return Point{}, fmt.Errorf("could not parse longitude: %w", err)
 	}
 
 	if !cLng.Hemisphere().East() {
 		lng = -lng
 	}
 
-	return &Point{
-		lat: lat,
-		lng: lng,
+	return Point{
+		Latitude:  float32(lat),
+		Longitude: float32(lng),
 	}, nil
 }
 

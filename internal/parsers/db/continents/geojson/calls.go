@@ -18,7 +18,7 @@ const continentProperty = "Continent"
 // Returns locodedb.ContinentUnknown if no entry matches.
 //
 // All GeoJSON feature are parsed from file once and stored in memory.
-func (db *DB) PointContinent(point *locodedb.Point) (*locodedb.Continent, error) {
+func (db *DB) PointContinent(point locodedb.Point) (*locodedb.Continent, error) {
 	var err error
 
 	db.once.Do(func() {
@@ -29,7 +29,7 @@ func (db *DB) PointContinent(point *locodedb.Point) (*locodedb.Continent, error)
 		return nil, err
 	}
 
-	planarPoint := orb.Point{point.Longitude(), point.Latitude()}
+	planarPoint := orb.Point{float64(point.Longitude), float64(point.Latitude)}
 
 	var (
 		continent string

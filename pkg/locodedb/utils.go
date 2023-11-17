@@ -108,17 +108,17 @@ func unpackLocodesData(data []byte) (string, []locodesCSV, error) {
 		cont, _ := strconv.ParseUint(record[2], 10, 8)
 		var continent = Continent(uint8(cont))
 
-		lat, err := strconv.ParseFloat(record[5], 64)
+		lat, err := strconv.ParseFloat(record[5], 32)
 		if err != nil {
 			return "", nil, err
 		}
-		lon, err := strconv.ParseFloat(record[6], 64)
+		lon, err := strconv.ParseFloat(record[6], 32)
 		if err != nil {
 			return "", nil, err
 		}
 
 		m = append(m, locodesCSV{
-			point:         Point{lat: lat, lng: lon},
+			point:         Point{Latitude: float32(lat), Longitude: float32(lon)},
 			offset:        recOffset,
 			locationLen:   locationLen,
 			subDivCodeLen: subDivCodeLen,

@@ -22,7 +22,7 @@ type AirportRecord struct {
 	CountryName string
 
 	// Geo point where airport is located.
-	Point *locodedb.Point
+	Point locodedb.Point
 }
 
 // ErrAirportNotFound is returned by AirportRecord readers
@@ -41,7 +41,7 @@ type AirportDB interface {
 // ContinentsDB is an interface of continent database.
 type ContinentsDB interface {
 	// Must return continent of the geo point.
-	PointContinent(*locodedb.Point) (*locodedb.Continent, error)
+	PointContinent(locodedb.Point) (*locodedb.Continent, error)
 }
 
 var ErrSubDivNotFound = errors.New("subdivision not found")
@@ -93,7 +93,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 
 		countryName := ""
 
-		if geoPoint == nil {
+		if geoPoint == (locodedb.Point{}) {
 			airportRecord, err := airports.Get(tableRecord)
 			if err != nil {
 				if errors.Is(err, ErrAirportNotFound) {
@@ -110,7 +110,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 		dbRecord := locodedb.Record{
 			Location:   tableRecord.NameWoDiacritics,
 			SubDivCode: tableRecord.SubDiv,
-			Point:      *geoPoint,
+			Point:      geoPoint,
 		}
 
 		if countryName == "" {

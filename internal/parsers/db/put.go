@@ -49,8 +49,8 @@ func (db *CsvDB) Put(data []Data) error {
 			strconv.Itoa(int(rec.Cont)),
 			rec.SubDivCode,
 			rec.SubDivName,
-			strconv.FormatFloat(rec.Point.Latitude(), 'f', -1, 64),
-			strconv.FormatFloat(rec.Point.Longitude(), 'f', -1, 64),
+			strconv.FormatFloat(float64(rec.Point.Latitude), 'f', -1, 32),
+			strconv.FormatFloat(float64(rec.Point.Longitude), 'f', -1, 32),
 		}
 
 		newRecordsLocode = append(newRecordsLocode, newRecord)
