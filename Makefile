@@ -4,7 +4,7 @@ VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8
 LOCODECLI ?= locode-db
 LOCODEDB ?= pkg/locodedb/data
 
-.PHONY: all clean version help unlocode generate
+.PHONY: all clean version help unlocode generate $(LOCODECLI)
 
 DIRS = in tmp ${LOCODEDB}
 
