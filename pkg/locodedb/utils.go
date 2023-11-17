@@ -44,6 +44,7 @@ type countryData struct {
 type locodesCSV struct {
 	point         Point
 	offset        uint32
+	code          LocationCode
 	locationLen   uint8
 	subDivCodeLen uint8
 	subDivNameLen uint8
@@ -98,13 +99,14 @@ func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, err
 			return "", errors.New("string buffer int32 overflow")
 		}
 		var (
+			code          LocationCode
 			recOffset     = uint32(b.Len())
 			locationLen   = uint8(len(record[1]))
 			subDivCodeLen = uint8(len(record[3]))
 			subDivNameLen = uint8(len(record[4]))
 		)
 
-		b.WriteString(record[0][CountryCodeLen:])
+		copy(code[:], record[0][CountryCodeLen:])
 		b.WriteString(record[1])
 		b.WriteString(record[3])
 		b.WriteString(record[4])
@@ -131,6 +133,7 @@ func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, err
 		}
 		rec.locodes = append(rec.locodes, locodesCSV{
 			point:         Point{Latitude: float32(lat), Longitude: float32(lon)},
+			code:          code,
 			offset:        recOffset,
 			locationLen:   locationLen,
 			subDivCodeLen: subDivCodeLen,

@@ -49,11 +49,12 @@ func Get(locodeStr string) (Record, error) {
 		return Record{}, ErrNotFound
 	}
 
+	code := locodeStr[CountryCodeLen:]
 	n := sort.Search(len(cd.locodes), func(i int) bool {
-		cmp := strings.Compare(codeFromCSV(&cd.locodes[i]), locodeStr[CountryCodeLen:])
+		cmp := strings.Compare(codeFromCSV(&cd.locodes[i]), code)
 		return cmp >= 0
 	})
-	if n == len(cd.locodes) || strings.Compare(codeFromCSV(&cd.locodes[n]), locodeStr[CountryCodeLen:]) != 0 {
+	if n == len(cd.locodes) || strings.Compare(codeFromCSV(&cd.locodes[n]), code) != 0 {
 		return Record{}, ErrNotFound
 	}
 
@@ -68,17 +69,17 @@ func Get(locodeStr string) (Record, error) {
 }
 
 func codeFromCSV(c *locodesCSV) string {
-	return locodeStrings[int(c.offset) : int(c.offset)+LocationCodeLen]
+	return string(c.code[:])
 }
 
 func locFromCSV(c *locodesCSV) string {
-	return locodeStrings[int(c.offset)+LocationCodeLen : int(c.offset)+LocationCodeLen+int(c.locationLen)]
+	return locodeStrings[c.offset : c.offset+uint32(c.locationLen)]
 }
 
 func divCodeFromCSV(c *locodesCSV) string {
-	return locodeStrings[int(c.offset)+LocationCodeLen+int(c.locationLen) : int(c.offset)+LocationCodeLen+int(c.locationLen)+int(c.subDivCodeLen)]
+	return locodeStrings[c.offset+uint32(c.locationLen) : c.offset+uint32(c.locationLen)+uint32(c.subDivCodeLen)]
 }
 
 func divNameFromCSV(c *locodesCSV) string {
-	return locodeStrings[int(c.offset)+LocationCodeLen+int(c.locationLen)+int(c.subDivCodeLen) : int(c.offset)+LocationCodeLen+int(c.locationLen)+int(c.subDivCodeLen)+int(c.subDivNameLen)]
+	return locodeStrings[c.offset+uint32(c.locationLen)+uint32(c.subDivCodeLen) : c.offset+uint32(c.locationLen)+uint32(c.subDivCodeLen)+uint32(c.subDivNameLen)]
 }
