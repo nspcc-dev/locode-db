@@ -17,8 +17,9 @@ var (
 	mCountries map[CountryCode]countryData
 )
 
-// Get returns a record for a given locode string. The string must be 5 letters long. The first 2 letters are the country
-// code and the last 3 letters are the location code.
+// Get returns a record for a given locode string. The string must be 5 or 6
+// letters long. The first 2 letters are country code followed by an optional
+// space separator and 3 letters of the location code.
 func Get(locodeStr string) (Record, error) {
 	if err := initLocodeData(); err != nil {
 		return Record{}, err
