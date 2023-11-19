@@ -3,6 +3,8 @@ package locodedb
 import (
 	"fmt"
 	"strings"
+
+	"github.com/nspcc-dev/locode-db/pkg/locodedb"
 )
 
 const (
@@ -38,12 +40,12 @@ type LatitudeHemisphere [hemisphereSymbols]uint8
 
 func coordinateFromString(s string, degDigits int, hemisphereAlphabet []uint8) (*coordinateCode, error) {
 	if len(s) != degDigits+minutesDigits+hemisphereSymbols {
-		return nil, ErrInvalidString
+		return nil, locodedb.ErrInvalidString
 	}
 
 	for i := range s[:degDigits+minutesDigits] {
 		if !isDigit(s[i]) {
-			return nil, ErrInvalidString
+			return nil, locodedb.ErrInvalidString
 		}
 	}
 
@@ -55,13 +57,17 @@ loop:
 			}
 		}
 
-		return nil, ErrInvalidString
+		return nil, locodedb.ErrInvalidString
 	}
 
 	return &coordinateCode{
 		degDigits: degDigits,
 		value:     []uint8(s),
 	}, nil
+}
+
+func isDigit(sym uint8) bool {
+	return sym >= '0' && sym <= '9'
 }
 
 // LongitudeFromString parses a string and returns the location's longitude.
@@ -171,7 +177,7 @@ func CoordinatesFromString(s string) (*Coordinates, error) {
 
 	strs := strings.Split(s, " ")
 	if len(strs) != 2 {
-		return nil, ErrInvalidString
+		return nil, locodedb.ErrInvalidString
 	}
 
 	lat, err := LatitudeFromString(strs[0])

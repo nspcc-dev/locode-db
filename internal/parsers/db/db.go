@@ -77,7 +77,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			return err
 		}
 
-		crd, err := locodedb.CoordinatesFromString(tableRecord.Coordinates)
+		crd, err := CoordinatesFromString(tableRecord.Coordinates)
 		if err != nil {
 			if errors.Is(err, locodedb.ErrInvalidString) {
 				return nil
@@ -86,7 +86,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			return err
 		}
 
-		geoPoint, err := locodedb.PointFromCoordinates(crd)
+		geoPoint, err := PointFromCoordinates(crd)
 		if err != nil {
 			return fmt.Errorf("could not parse geo point: %w", err)
 		}
