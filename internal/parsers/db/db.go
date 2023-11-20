@@ -22,7 +22,7 @@ type AirportRecord struct {
 	CountryName string
 
 	// Geo point where airport is located.
-	Point *locodedb.Point
+	Point locodedb.Point
 }
 
 // ErrAirportNotFound is returned by AirportRecord readers
@@ -41,7 +41,7 @@ type AirportDB interface {
 // ContinentsDB is an interface of continent database.
 type ContinentsDB interface {
 	// Must return continent of the geo point.
-	PointContinent(*locodedb.Point) (*locodedb.Continent, error)
+	PointContinent(locodedb.Point) (*locodedb.Continent, error)
 }
 
 var ErrSubDivNotFound = errors.New("subdivision not found")
@@ -77,7 +77,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			return err
 		}
 
-		crd, err := locodedb.CoordinatesFromString(tableRecord.Coordinates)
+		crd, err := CoordinatesFromString(tableRecord.Coordinates)
 		if err != nil {
 			if errors.Is(err, locodedb.ErrInvalidString) {
 				return nil
@@ -86,20 +86,14 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			return err
 		}
 
-		geoPoint, err := locodedb.PointFromCoordinates(crd)
+		geoPoint, err := PointFromCoordinates(crd)
 		if err != nil {
 			return fmt.Errorf("could not parse geo point: %w", err)
 		}
 
-		dbRecord := locodedb.Record{
-			Location:   tableRecord.NameWoDiacritics,
-			SubDivCode: tableRecord.SubDiv,
-			Point:      geoPoint,
-		}
-
 		countryName := ""
 
-		if geoPoint == nil {
+		if geoPoint == (locodedb.Point{}) {
 			airportRecord, err := airports.Get(tableRecord)
 			if err != nil {
 				if errors.Is(err, ErrAirportNotFound) {
@@ -113,7 +107,11 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			countryName = airportRecord.CountryName
 		}
 
-		dbRecord.Point = geoPoint
+		dbRecord := locodedb.Record{
+			Location:   tableRecord.NameWoDiacritics,
+			SubDivCode: tableRecord.SubDiv,
+			Point:      geoPoint,
+		}
 
 		if countryName == "" {
 			countryName, err = names.CountryName(dbKey.CountryCode())
@@ -148,7 +146,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			return nil
 		}
 
-		dbRecord.Cont = continent
+		dbRecord.Cont = *continent
 
 		newData = append(newData, Data{*dbKey, dbRecord})
 

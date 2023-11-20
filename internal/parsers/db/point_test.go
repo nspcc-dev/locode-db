@@ -39,10 +39,10 @@ func TestPointFromCoordinates(t *testing.T) {
 	)
 
 	for _, test := range testCases {
-		crd, err = locodedb.CoordinatesFromString(test.latGot + " " + test.longGot)
+		crd, err = CoordinatesFromString(test.latGot + " " + test.longGot)
 		require.NoError(t, err)
 
-		point, err = locodedb.PointFromCoordinates(crd)
+		point, err = PointFromCoordinates(crd)
 		require.NoError(t, err)
 
 		require.Equal(t, test.latWant, point.Latitude())

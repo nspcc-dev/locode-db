@@ -73,7 +73,7 @@ func (db *DB) Get(locodeRecord locode.Record) (*locode.AirportRecord, error) {
 
 		return &locode.AirportRecord{
 			CountryName: records[i].country,
-			Point:       locodedb.NewPoint(lat, lng),
+			Point:       locodedb.Point{Latitude: float32(lat), Longitude: float32(lng)},
 		}, nil
 	}
 
