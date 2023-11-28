@@ -1,6 +1,22 @@
 # Changelog
 Changelog for NeoFS LOCODE database
 
+## 0.5.0 - 2023-11-28
+
+The DB is now provided as a Go package, import it as
+`github.com/nspcc-dev/locode-db/pkg/locodedb`. Old binary DB is no longer
+being built and released.
+
+### Changed
+- Dropped deb packages (#18)
+- License is MIT now (#18)
+- DB is stored in a Go package (#22, #23, #28)
+- neofs-cli is no longer required to regenerate the DB (#22)
+
+### Updated
+- UN/LOCODE to `2023-1` version (#22)
+- golang.org/x/text dependency from 0.3.7 to 0.3.8 (#27)
+
 ## 0.4.0 - 2023-04-11
 
 ### Updated

@@ -6,14 +6,13 @@
 </p>
 
 ---
+[![Go Reference](https://pkg.go.dev/badge/github.com/nspcc-dev/locode-db/pkg/locodedb.svg)](https://pkg.go.dev/github.com/nspcc-dev/locode-db/pkg/locodedb)
 ![GitHub release](https://img.shields.io/github/release/nspcc-dev/neofs-locode-db.svg)
 ![GitHub license](https://img.shields.io/github/license/nspcc-dev/neofs-locode-db.svg?style=popout)
 
 # Overview
 
-This repository contains package for getting additional information about continent, country code and name, location, geo-position, subdivision based on locode.
-
-[Locodes](https://github.com/nspcc-dev/locode-db/locodedb/locodes.csv.gz) and [countries](https://github.com/nspcc-dev/locode-db/locodedb/countries.csv.gz) databases can be regenerated using locode-db CLI command.
+This repository contains UN/LOCODE DB in a Go package. It can be used to get additional information about continent, country code and name, location, geo-position, subdivision based on LOCODE.
 
 ## Prerequisites
 
@@ -24,7 +23,11 @@ This repository contains package for getting additional information about contin
 - [OpenFlight Countries](https://raw.githubusercontent.com/jpatokal/openflights/master/data/countries.dat)
   database
 
-## Quick start
+## Usage
+
+Import `github.com/nspcc-dev/locode-db/pkg/locodedb` into your project and use its API.
+
+## Development
 
 Just run `make` to regenerate CSV files with [locodes](https://github.com/nspcc-dev/locode-db/locodedb/locodes.csv.gz) and [countries](https://github.com/nspcc-dev/locode-db/locodedb/countries.csv.gz).
 
