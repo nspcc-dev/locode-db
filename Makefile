@@ -24,17 +24,19 @@ in/airports.dat:
 in/countries.dat:
 	wget -c https://raw.githubusercontent.com/jpatokal/openflights/master/data/countries.dat -O in/countries.dat
 
-geojson: continents.geojson.gz
+in/continents.geojson: continents.geojson.gz
 	gunzip -c $< > in/continents.geojson
 
-unlocode:
-	wget -c https://service.unece.org/trade/locode/$(UNLOCODEFILE) -O tmp/$(UNLOCODEFILE)
+tmp/$(UNLOCODEFILE): | tmp
+	wget -c https://service.unece.org/trade/locode/$(UNLOCODEFILE) -O $@
+
+unlocode: tmp/$(UNLOCODEFILE) | in
 	unzip -u tmp/$(UNLOCODEFILE) -d in/
 
 $(LOCODECLI):
 	go build -o $(LOCODECLI) ./internal
 
-generate: unlocode geojson in/airports.dat in/countries.dat $(LOCODECLI) $(DIRS)
+generate: unlocode in/airports.dat in/countries.dat in/continents.geojson $(LOCODECLI) | $(LOCODEDB)
 	./$(LOCODECLI) generate \
 	--airports in/airports.dat \
 	--continents in/continents.geojson \
