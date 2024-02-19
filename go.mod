@@ -3,10 +3,10 @@ module github.com/nspcc-dev/locode-db
 go 1.20
 
 require (
-	github.com/paulmach/orb v0.10.0
-	github.com/spf13/cobra v1.7.0
+	github.com/paulmach/orb v0.11.1
+	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/text v0.3.8
+	golang.org/x/text v0.14.0
 )
 
 require (
