@@ -10,7 +10,7 @@ import (
 func TestPointFromCoordinates(t *testing.T) {
 	testCases := []struct {
 		latGot, longGot   string
-		latWant, longWant float64
+		latWant, longWant float32
 	}{
 		{
 			latGot:   "5915N",
@@ -33,8 +33,8 @@ func TestPointFromCoordinates(t *testing.T) {
 	}
 
 	var (
-		crd   *locodedb.Coordinates
-		point *locodedb.Point
+		crd   *Coordinates
+		point locodedb.Point
 		err   error
 	)
 
@@ -45,7 +45,7 @@ func TestPointFromCoordinates(t *testing.T) {
 		point, err = PointFromCoordinates(crd)
 		require.NoError(t, err)
 
-		require.Equal(t, test.latWant, point.Latitude())
-		require.Equal(t, test.longWant, point.Longitude())
+		require.Equal(t, test.latWant, point.Latitude)
+		require.Equal(t, test.longWant, point.Longitude)
 	}
 }

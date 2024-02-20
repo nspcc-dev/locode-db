@@ -3,6 +3,8 @@
 VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8 2>/dev/null || cat VERSION 2>/dev/null || echo "develop")"
 LOCODECLI ?= locode-db
 LOCODEDB ?= pkg/locodedb/data
+UNLOCODEFILE = loc232csv.zip
+UNLOCODEPREFIX = "2023-2"
 
 .PHONY: all clean version help unlocode generate $(LOCODECLI)
 
@@ -22,23 +24,25 @@ in/airports.dat:
 in/countries.dat:
 	wget -c https://raw.githubusercontent.com/jpatokal/openflights/master/data/countries.dat -O in/countries.dat
 
-geojson: continents.geojson.gz
+in/continents.geojson: continents.geojson.gz
 	gunzip -c $< > in/continents.geojson
 
-unlocode:
-	wget -c https://service.unece.org/trade/locode/loc231csv.zip -O tmp/loc231csv.zip
-	unzip -u tmp/loc231csv.zip -d in/
+tmp/$(UNLOCODEFILE): | tmp
+	wget -c https://service.unece.org/trade/locode/$(UNLOCODEFILE) -O $@
+
+unlocode: tmp/$(UNLOCODEFILE) | in
+	unzip -u tmp/$(UNLOCODEFILE) -d in/
 
 $(LOCODECLI):
 	go build -o $(LOCODECLI) ./internal
 
-generate: unlocode geojson in/airports.dat in/countries.dat $(LOCODECLI) $(DIRS)
+generate: unlocode in/airports.dat in/countries.dat in/continents.geojson $(LOCODECLI) | $(LOCODEDB)
 	./$(LOCODECLI) generate \
 	--airports in/airports.dat \
 	--continents in/continents.geojson \
 	--countries in/countries.dat \
-	--in in/2023-1\ UNLOCODE\ CodeListPart1.csv,in/2023-1\ UNLOCODE\ CodeListPart2.csv,in/2023-1\ UNLOCODE\ CodeListPart3.csv \
-	--subdiv in/2023-1\ SubdivisionCodes.csv \
+	--in in/$(UNLOCODEPREFIX)\ UNLOCODE\ CodeListPart1.csv,in/$(UNLOCODEPREFIX)\ UNLOCODE\ CodeListPart2.csv,in/$(UNLOCODEPREFIX)\ UNLOCODE\ CodeListPart3.csv \
+	--subdiv in/$(UNLOCODEPREFIX)\ SubdivisionCodes.csv \
 	--out $(LOCODEDB)
 
 compress_locodedb: generate
