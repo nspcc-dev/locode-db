@@ -1,6 +1,15 @@
 # Changelog
 Changelog for NeoFS LOCODE database
 
+## 0.6.0 - 2024-02-20
+
+### Changed
+- Go 1.20 is required to build now (#33)
+
+### Updated
+- UN/LOCODE to `2023-2` version (#33)
+- All dependencies to current versions (#33)
+
 ## 0.5.0 - 2023-11-28
 
 The DB is now provided as a Go package, import it as
