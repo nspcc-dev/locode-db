@@ -1,0 +1,95 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [ opened, synchronize ]
+  workflow_dispatch:
+
+jobs:
+  test_cover:
+    name: Coverage
+    runs-on: ubuntu-22.04
+
+    env:
+      CGO_ENABLED: 0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      - name: Write coverage profile
+        run: go test ./... -coverprofile=./coverage.txt -covermode=atomic
+
+      - name: Upload coverage results to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: false
+          slug: nspcc-dev/locode-db
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.txt
+          verbose: true
+
+  tests:
+    name: Run tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-22.04, windows-2022, macos-14 ]
+        go_versions: [ '1.20', '1.21', '1.22' ]
+        exclude:
+          - os: macos-14
+            go_versions: '1.20'
+          - os: macos-14
+            go_versions: '1.21'
+          - os: windows-2022
+            go_versions: '1.20'
+          - os: windows-2022
+            go_versions: '1.21'
+          - os: ubuntu-22.04
+            go_versions: '1.22'
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '${{ matrix.go_versions }}'
+          cache: true
+
+      - name: Run tests
+        run: go test -race ./...
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'go' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
