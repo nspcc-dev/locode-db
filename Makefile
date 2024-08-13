@@ -43,6 +43,7 @@ generate: in/airports.dat in/countries.dat in/continents.geojson in/SubdivisionC
 	--continents in/continents.geojson \
 	--countries in/countries.dat \
 	--in in/CodeList.csv \
+	--in override.csv \
 	--subdiv in/SubdivisionCodes.csv \
 	--out $(LOCODEDB)
 

@@ -118,7 +118,7 @@ func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, err
 		if err != nil {
 			return "", err
 		}
-		lon, err := strconv.ParseFloat(record[6], 32)
+		lng, err := strconv.ParseFloat(record[6], 32)
 		if err != nil {
 			return "", err
 		}
@@ -132,7 +132,7 @@ func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, err
 			return "", errors.New("invalid country in the DB")
 		}
 		rec.locodes = append(rec.locodes, locodesCSV{
-			point:         Point{Latitude: float32(lat), Longitude: float32(lon)},
+			point:         Point{Latitude: float32(lat), Longitude: float32(lng)},
 			code:          code,
 			offset:        recOffset,
 			locationLen:   locationLen,

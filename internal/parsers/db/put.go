@@ -13,6 +13,11 @@ import (
 const (
 	filenameCSVLocode    = "locodes.csv"
 	filenameCSVCountries = "countries.csv"
+
+	// LatRecordNum is number of latitude column in the locode data record.
+	LatRecordNum = 5
+	// LngRecordNum is number of longitude column in the locode data record.
+	LngRecordNum = 6
 )
 
 // Data is a struct that contains the Key and the Record.
@@ -26,7 +31,7 @@ func (db *CsvDB) Put(data []Data) error {
 	newRecordsLocode := make([][]string, 0, len(data))
 	newRecordsCountry := make([][]string, 0, 300)
 
-	uniqueKeys := make(map[string]struct{}, len(data))
+	uniqueKeys := make(map[string]int, len(data))
 	uniqueKeysCountry := make(map[string]struct{}, 300)
 
 	for _, row := range data {
@@ -36,12 +41,15 @@ func (db *CsvDB) Put(data []Data) error {
 		// Calculate a unique index for each key
 		keyString := key.CountryCode().String() + key.LocationCode().String()
 
-		if _, exists := uniqueKeys[keyString]; exists {
-			continue // Skip duplicates
+		if index, exists := uniqueKeys[keyString]; exists {
+			// We expected duplicates from override.csv to override wrong number format in location
+			newRecordsLocode[index][LatRecordNum] = strconv.FormatFloat(float64(rec.Point.Latitude), 'f', -1, 32)
+			newRecordsLocode[index][LngRecordNum] = strconv.FormatFloat(float64(rec.Point.Longitude), 'f', -1, 32)
+			continue
 		}
 
 		// Mark the index as seen
-		uniqueKeys[keyString] = struct{}{}
+		uniqueKeys[keyString] = len(newRecordsLocode)
 
 		newRecord := []string{
 			keyString,
