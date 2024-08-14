@@ -2,6 +2,7 @@ package locodedb
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/nspcc-dev/locode-db/pkg/locodedb"
@@ -39,6 +40,13 @@ type LatitudeCode coordinateCode
 type LatitudeHemisphere [hemisphereSymbols]uint8
 
 func coordinateFromString(s string, degDigits int, hemisphereAlphabet []uint8) (*coordinateCode, error) {
+	if strings.Contains(s, ".") {
+		return &coordinateCode{
+			degDigits: len(s) - minutesDigits - hemisphereSymbols,
+			value:     []uint8(s),
+		}, nil
+	}
+
 	if len(s) != degDigits+minutesDigits+hemisphereSymbols {
 		return nil, locodedb.ErrInvalidString
 	}
@@ -194,4 +202,73 @@ func CoordinatesFromString(s string) (*Coordinates, error) {
 		lat: lat,
 		lng: lng,
 	}, nil
+}
+
+// ToDecimalDegrees returns decimal representation of the longitude or an error if the conversion fails.
+func (lc *LongitudeCode) ToDecimalDegrees() (float64, error) {
+	return decimalDegreesFromCoordinateCode((*coordinateCode)(lc), lc.Hemisphere().East())
+}
+
+// ToDecimalDegrees returns the decimal representation of the latitude or an error if the conversion fails.
+func (lc *LatitudeCode) ToDecimalDegrees() (float64, error) {
+	return decimalDegreesFromCoordinateCode((*coordinateCode)(lc), lc.Hemisphere().North())
+}
+
+// decimalDegreesFromCoordinateCode returns the decimal representation of the coordinate
+// or an error if the conversion fails.
+// Takes a coordinate code and a boolean indicating
+// if the coordinate is in the positive hemisphere.
+func decimalDegreesFromCoordinateCode(crdCode *coordinateCode, positiveHemisphere bool) (float64, error) {
+	var (
+		value float64
+		err   error
+	)
+
+	crdString := string(crdCode.value)
+	// checking that the coordinates can be in decimal degrees
+	if strings.Contains(crdString, ".") {
+		value, err = strconv.ParseFloat(crdString[:len(crdString)-hemisphereSymbols], 64)
+		if err != nil {
+			return 0, fmt.Errorf("could not parse coordinate: %w", err)
+		}
+	} else {
+		crdDeg := crdCode.degrees()
+		crdMnt := crdCode.minutes()
+
+		value, err = bytesToDecimal(crdDeg[:], crdMnt[:])
+		if err != nil {
+			return 0, fmt.Errorf("could not parse coordinate: %w", err)
+		}
+	}
+
+	if !positiveHemisphere {
+		value = -value
+	}
+
+	return value, nil
+}
+
+// bytesToDecimal converts degree and minute components to decimal degrees.
+func bytesToDecimal(intRaw, minutesRaw []byte) (float64, error) {
+	integer, err := strconv.ParseFloat(string(intRaw), 64)
+	if err != nil {
+		return 0, fmt.Errorf("could not parse integer part: %w", err)
+	}
+
+	decimal, err := minutesToDegrees(minutesRaw)
+	if err != nil {
+		return 0, fmt.Errorf("could not parse decimal part: %w", err)
+	}
+
+	return integer + decimal, nil
+}
+
+// minutesToDegrees converts minutes to decimal part of a degree.
+func minutesToDegrees(raw []byte) (float64, error) {
+	minutes, err := strconv.ParseFloat(string(raw), 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return minutes / 60, nil
 }
