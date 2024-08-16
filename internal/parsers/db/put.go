@@ -1,10 +1,11 @@
 package locodedb
 
 import (
+	"cmp"
 	"encoding/csv"
 	"os"
 	"path/filepath"
-	"sort"
+	"slices"
 	"strconv"
 
 	"github.com/nspcc-dev/locode-db/pkg/locodedb"
@@ -69,12 +70,12 @@ func (db *CsvDB) Put(data []Data) error {
 		newRecordsCountry = append(newRecordsCountry, newRecordCountry)
 	}
 
-	sort.Slice(newRecordsLocode, func(i, j int) bool {
-		return newRecordsLocode[i][0]+newRecordsLocode[i][1] < newRecordsLocode[j][0]+newRecordsLocode[j][1]
+	slices.SortFunc(newRecordsLocode, func(a, b []string) int {
+		return cmp.Compare(a[0]+a[1], b[0]+b[1])
 	})
 
-	sort.Slice(newRecordsCountry, func(i, j int) bool {
-		return newRecordsCountry[i][0] < newRecordsCountry[j][0]
+	slices.SortFunc(newRecordsCountry, func(a, b []string) int {
+		return cmp.Compare(a[0], b[0])
 	})
 
 	err := writeToCsvFile(newRecordsCountry, filepath.Join(db.path, filenameCSVCountries))
