@@ -9,7 +9,7 @@ import (
 
 // SourceTable is an interface of the UN/LOCODE table.
 type SourceTable interface {
-	// Must iterate over all entries of the table
+	// IterateAll must iterate over all entries of the table
 	// and pass next entry to the handler.
 	//
 	// Must return handler's errors directly.
@@ -31,7 +31,7 @@ var ErrAirportNotFound = errors.New("airport not found")
 
 // AirportDB is an interface of airport database.
 type AirportDB interface {
-	// Must return the record by UN/LOCODE table record.
+	// Get must return the record by UN/LOCODE table record.
 	//
 	// Must return ErrAirportNotFound if there is no
 	// related airport in the database.
@@ -40,7 +40,7 @@ type AirportDB interface {
 
 // ContinentsDB is an interface of continent database.
 type ContinentsDB interface {
-	// Must return continent of the geo point.
+	// PointContinent must return continent of the geo point.
 	PointContinent(locodedb.Point) (*locodedb.Continent, error)
 }
 
@@ -50,13 +50,13 @@ var ErrCountryNotFound = errors.New("country not found")
 
 // NamesDB is an interface of the location namespace.
 type NamesDB interface {
-	// Must resolve a country code to a country name.
+	// CountryName must resolve a country code to a country name.
 	//
 	// Must return ErrCountryNotFound if there is no
 	// country with the provided code.
 	CountryName(*locodedb.CountryCode) (string, error)
 
-	// Must resolve (country code, subdivision code) to
+	// SubDivName must resolve (country code, subdivision code) to
 	// a subdivision name.
 	//
 	// Must return ErrSubDivNotFound if either country or
