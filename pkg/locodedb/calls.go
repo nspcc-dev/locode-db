@@ -1,8 +1,9 @@
 package locodedb
 
 import (
+	"cmp"
 	"errors"
-	"sort"
+	"slices"
 	"strings"
 )
 
@@ -51,9 +52,8 @@ func Get(locodeStr string) (Record, error) {
 	}
 
 	code := locodeStr[CountryCodeLen:]
-	n := sort.Search(len(cd.locodes), func(i int) bool {
-		cmp := strings.Compare(codeFromCSV(&cd.locodes[i]), code)
-		return cmp >= 0
+	n, _ := slices.BinarySearchFunc(cd.locodes, code, func(csv locodesCSV, s string) int {
+		return cmp.Compare(codeFromCSV(&csv), s)
 	})
 	if n == len(cd.locodes) || strings.Compare(codeFromCSV(&cd.locodes[n]), code) != 0 {
 		return Record{}, ErrNotFound

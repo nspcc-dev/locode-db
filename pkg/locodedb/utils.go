@@ -8,6 +8,7 @@ import (
 	"errors"
 	"io"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -144,7 +145,7 @@ func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, err
 	}
 	for k := range mc {
 		rec := mc[k]
-		rec.locodes = rec.locodes[:len(rec.locodes):len(rec.locodes)]
+		rec.locodes = slices.Clip(rec.locodes)
 		mc[k] = rec
 	}
 	return b.String(), nil
