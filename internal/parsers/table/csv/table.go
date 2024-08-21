@@ -68,7 +68,7 @@ func New(prm Prm, opts ...Option) *Table {
 	}
 
 	return &Table{
-		paths:      append(o.extraPaths, prm.Path),
+		paths:      append([]string{prm.Path}, o.extraPaths...),
 		mode:       o.mode,
 		subDivPath: prm.SubDivPath,
 	}

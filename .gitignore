@@ -2,3 +2,4 @@ tmp/
 in/
 locode_db
 *.csv
+!override.csv
