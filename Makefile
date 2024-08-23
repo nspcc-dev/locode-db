@@ -34,7 +34,7 @@ in/CodeList.csv: | in
 	awk 'NR>1' $@ > temp && mv temp $@
 
 generate: in/airports.dat in/countries.dat in/continents.geojson in/SubdivisionCodes.csv in/CodeList.csv | $(LOCODEDB)
-	go run ./internal \
+	go run ./internal/generate/ \
 	--airports in/airports.dat \
 	--continents in/continents.geojson \
 	--countries in/countries.dat \
