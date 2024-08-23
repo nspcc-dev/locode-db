@@ -47,7 +47,7 @@ linters:
     - bidichk
     - durationcheck
     - exhaustive
-    - exportloopref
+    - copyloopvar
     - gofmt
     - goimports
     - gomodguard

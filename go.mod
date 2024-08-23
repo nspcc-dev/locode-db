@@ -1,6 +1,6 @@
 module github.com/nspcc-dev/locode-db
 
-go 1.21
+go 1.22
 
 require (
 	github.com/paulmach/orb v0.11.1

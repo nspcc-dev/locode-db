@@ -115,7 +115,7 @@ func (lc *LatitudeCode) Degrees() (l [latDegDigits]uint8) {
 }
 
 func (cc *coordinateCode) minutes() (mnt [minutesDigits]uint8) {
-	for i := 0; i < minutesDigits; i++ {
+	for i := range minutesDigits {
 		mnt[i] = cc.value[cc.degDigits+i]
 	}
 
@@ -143,7 +143,7 @@ func (lc *LatitudeCode) Hemisphere() LatitudeHemisphere {
 }
 
 func (cc *coordinateCode) hemisphere() (h [hemisphereSymbols]uint8) {
-	for i := 0; i < hemisphereSymbols; i++ {
+	for i := range hemisphereSymbols {
 		h[i] = cc.value[cc.degDigits+minutesDigits+i]
 	}
 
