@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"log"
+	"strings"
 
 	locode "github.com/nspcc-dev/locode-db/internal/parsers/db"
 	airportsdb "github.com/nspcc-dev/locode-db/internal/parsers/db/airports"
@@ -17,20 +17,6 @@ type namesDB struct {
 	*csvlocode.Table
 }
 
-type stringSliceFlag []string
-
-func (s *stringSliceFlag) String() string {
-	return fmt.Sprint(*s)
-}
-
-func (s *stringSliceFlag) Set(value string) error {
-	if value == "" {
-		return errors.New("value is empty")
-	}
-	*s = append(*s, value)
-	return nil
-}
-
 const (
 	locodeGenerateInputFlag      = "in"
 	locodeGenerateSubDivFlag     = "subdiv"
@@ -41,7 +27,7 @@ const (
 )
 
 var (
-	locodeGenerateInPaths        stringSliceFlag
+	locodeGenerateInPaths        []string
 	locodeGenerateSubDivPath     string
 	locodeGenerateAirportsPath   string
 	locodeGenerateCountriesPath  string
@@ -50,7 +36,16 @@ var (
 )
 
 func init() {
-	flag.Var(&locodeGenerateInPaths, locodeGenerateInputFlag, "List of paths to UN/LOCODE tables (CSV)")
+	flag.Func(locodeGenerateInputFlag, "List of paths to UN/LOCODE tables (CSV)", func(s string) error {
+		splitStr := strings.Split(s, ",")
+		for _, path := range splitStr {
+			if path == "" {
+				return errors.New("path is empty")
+			}
+		}
+		locodeGenerateInPaths = append(locodeGenerateInPaths, splitStr...)
+		return nil
+	})
 	flag.StringVar(&locodeGenerateSubDivPath, locodeGenerateSubDivFlag, "", "Path to UN/LOCODE subdivision database (CSV)")
 	flag.StringVar(&locodeGenerateAirportsPath, locodeGenerateAirportsFlag, "", "Path to OpenFlights airport database (CSV)")
 	flag.StringVar(&locodeGenerateCountriesPath, locodeGenerateCountriesFlag, "", "Path to OpenFlights country database (CSV)")
