@@ -40,7 +40,7 @@ generate: in/airports.dat in/countries.dat in/continents.geojson in/SubdivisionC
 	--countries in/countries.dat \
 	--in in/CodeList.csv \
 	--subdiv in/SubdivisionCodes.csv \
-	--out $(LOCODEDB)
+	--out $(LOCODEDB);
 
 compress_locodedb: generate
 	@echo "⇒ Compressing files inside $(LOCODEDB)"
