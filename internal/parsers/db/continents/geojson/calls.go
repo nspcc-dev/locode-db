@@ -10,7 +10,7 @@ import (
 	"github.com/paulmach/orb/planar"
 )
 
-const continentProperty = "Continent"
+const continentProperty = "CONTINENT"
 
 // PointContinent goes through all polygons and returns the continent
 // in which the point is located.
