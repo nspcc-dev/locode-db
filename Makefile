@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8 2>/dev/null || cat VERSION 2>/dev/null || echo "develop")"
+VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8 2>/dev/null || echo "develop")"
 LOCODEDB ?= pkg/locodedb/data
 UNLOCODEREVISION = 600bdf54c4777a7328123d16166b1f8bbc7ee359
 
