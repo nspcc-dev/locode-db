@@ -3,6 +3,22 @@ Changelog for NeoFS LOCODE database
 
 ## [Unreleased]
 
+## [0.7.0] - 2024-08-28
+
+### Changed
+- Go 1.22 is required to build now (#40, #43)
+- Corrected known bad coordinates via a local override (#38)
+- Drop cobra dependency, use standard packages to deal with flags (#42)
+
+### Updated
+- UN/LOCODE to `2024-1` version (#44)
+- Switch data source to github.com/datasets/un-locode which has more suitable data format (#37)
+- Continents file from known source (#45)
+
+### Fixed
+- UN/LOCODE files now in UTF-8, without wrong symbols (#37)
+- Support float coordinates from UN/LOCODE files (#38)
+
 ## [0.6.0] - 2024-02-20
 
 ### Changed
@@ -66,4 +82,5 @@ Initial release.
 [0.4.0]: https://github.com/nspcc-dev/locode-db/compare/v0.3.0...v0.4.0
 [0.5.0]: https://github.com/nspcc-dev/locode-db/compare/v0.4.0...v0.5.0
 [0.6.0]: https://github.com/nspcc-dev/locode-db/compare/v0.5.0...v0.6.0
-[Unreleased]: https://github.com/nspcc-dev/locode-db/compare/v0.6.0...master
+[0.7.0]: https://github.com/nspcc-dev/locode-db/compare/v0.6.0...v0.7.0
+[Unreleased]: https://github.com/nspcc-dev/locode-db/compare/v0.7.0...master
