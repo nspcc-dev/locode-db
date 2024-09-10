@@ -60,7 +60,7 @@ func unpackCountriesData(data []byte) (map[CountryCode]countryData, error) {
 
 	for {
 		record, err := reader.Read()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		} else if err != nil {
 			return m, err
@@ -84,7 +84,7 @@ func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, err
 
 	for {
 		record, err := reader.Read()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		} else if err != nil {
 			return "", err

@@ -68,6 +68,5 @@ func TestGet(t *testing.T) {
 	t.Run("valid key", func(t *testing.T) {
 		_, err := locodedb.NewKey("RU", "MOW")
 		require.NoError(t, err)
-
 	})
 }

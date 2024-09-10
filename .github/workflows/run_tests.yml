@@ -8,6 +8,10 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint:
+    name: Linter
+    uses: nspcc-dev/.github/.github/workflows/go-linter.yml@master
+
   test_cover:
     name: Coverage
     runs-on: ubuntu-latest
