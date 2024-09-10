@@ -4,7 +4,7 @@ VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8
 LOCODEDB ?= pkg/locodedb/data
 UNLOCODEREVISION = 600bdf54c4777a7328123d16166b1f8bbc7ee359
 
-.PHONY: all clean version help generate
+.PHONY: all clean version help generate lint
 
 DIRS = in ${LOCODEDB}
 
@@ -52,6 +52,13 @@ compress_locodedb: generate
 	        rm "$$file"; \
 	    fi \
 	done
+
+.golangci.yml:
+	wget -O $@ https://github.com/nspcc-dev/.github/raw/master/.golangci.yml
+
+# Lint Go code
+lint: .golangci.yml
+	golangci-lint run
 
 # Print version
 version:
