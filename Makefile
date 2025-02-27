@@ -3,6 +3,7 @@
 VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8 2>/dev/null || echo "develop")"
 LOCODEDB ?= pkg/locodedb/data
 UNLOCODEREVISION = 340a08558c84ae43122b86e97606bd2f5a771a06
+OPENFLIGHTSREVISION = f9f41975b6d101425848284f978477a38c26b6ff
 
 .PHONY: all clean version help generate lint
 
@@ -17,10 +18,10 @@ $(DIRS):
 	@mkdir -p $@
 
 in/airports.dat: | in
-	wget -c https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat -O $@
+	wget -c https://raw.githubusercontent.com/jpatokal/openflights/${OPENFLIGHTSREVISION}/data/airports.dat -O $@
 
 in/countries.dat: | in
-	wget -c https://raw.githubusercontent.com/jpatokal/openflights/master/data/countries.dat -O $@
+	wget -c https://raw.githubusercontent.com/jpatokal/openflights/${OPENFLIGHTSREVISION}/data/countries.dat -O $@
 
 # https://gist.githubusercontent.com/hrbrmstr/91ea5cc9474286c72838/raw/59421ff9b268ff0929b051ddafafbeb94a4c1910/continents.json
 in/continents.geojson: continents.geojson.gz | in
