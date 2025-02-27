@@ -2,7 +2,7 @@
 
 VERSION ?= "$(shell git describe --tags --match "v*" --dirty --always --abbrev=8 2>/dev/null || echo "develop")"
 LOCODEDB ?= pkg/locodedb/data
-UNLOCODEREVISION = 600bdf54c4777a7328123d16166b1f8bbc7ee359
+UNLOCODEREVISION = 340a08558c84ae43122b86e97606bd2f5a771a06
 
 .PHONY: all clean version help generate lint
 
