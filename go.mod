@@ -4,8 +4,8 @@ go 1.22
 
 require (
 	github.com/paulmach/orb v0.11.1
-	github.com/stretchr/testify v1.8.4
-	golang.org/x/text v0.14.0
+	github.com/stretchr/testify v1.10.0
+	golang.org/x/text v0.22.0
 )
 
 require (
