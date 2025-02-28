@@ -9,7 +9,6 @@ import (
 	"unicode/utf8"
 
 	locode "github.com/nspcc-dev/locode-db/internal/parsers/db"
-	"github.com/nspcc-dev/locode-db/pkg/locodedb"
 	"golang.org/x/text/encoding/charmap"
 )
 
@@ -67,13 +66,13 @@ type subDivRecord struct {
 // and returns the subdivision name of the country and the subdivision codes match.
 //
 // Returns locodedb.ErrSubDivNotFound if no entry matches.
-func (t *Table) SubDivName(countryCode *locodedb.CountryCode, code string) (string, error) {
+func (t *Table) SubDivName(countryCode string, code string) (string, error) {
 	if err := t.initSubDiv(); err != nil {
 		return "", err
 	}
 
 	rec, ok := t.mSubDiv[subDivKey{
-		countryCode: countryCode.String(),
+		countryCode: countryCode,
 		subDivCode:  code,
 	}]
 	if !ok {

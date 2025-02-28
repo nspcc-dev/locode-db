@@ -1,17 +1,24 @@
 package locodedb
 
 import (
+	"errors"
 	"fmt"
 )
 
 // CountryCodeLen is the length of the country code.
 const CountryCodeLen = 2
 
-// CountryCode represents ISO 3166 alpha-2 Country Code.
-type CountryCode [CountryCodeLen]uint8
+// LocationCodeLen is the length of the location code.
+const LocationCodeLen = 3
 
-// CountryCodeFromString parses a string and returns the country code.
-func CountryCodeFromString(s string) (*CountryCode, error) {
+// ErrInvalidString is returned when the string is not a valid location code.
+var ErrInvalidString = errors.New("invalid string format in UN/Locode")
+
+// countryCode represents ISO 3166 alpha-2 Country Code.
+type countryCode [CountryCodeLen]uint8
+
+// countryCodeFromString parses a string and returns the country code.
+func countryCodeFromString(s string) (*countryCode, error) {
 	if l := len(s); l != CountryCodeLen {
 		return nil, fmt.Errorf("incorrect country code length: expect: %d, got: %d",
 			CountryCodeLen,
@@ -25,19 +32,16 @@ func CountryCodeFromString(s string) (*CountryCode, error) {
 		}
 	}
 
-	cc := CountryCode{}
+	cc := countryCode{}
 	copy(cc[:], s)
 
 	return &cc, nil
 }
 
-// String returns a string representation of the country code.
-func (c *CountryCode) String() string {
-	syms := c.Symbols()
-	return string(syms[:])
+func isUpperAlpha(sym uint8) bool {
+	return sym >= 'A' && sym <= 'Z'
 }
 
-// Symbols returns the country code as a slice of symbols.
-func (c *CountryCode) Symbols() [CountryCodeLen]uint8 {
-	return *c
+func isDigit(sym uint8) bool {
+	return sym >= '0' && sym <= '9'
 }
