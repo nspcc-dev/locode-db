@@ -15,7 +15,7 @@ var (
 	locodeStrings string
 
 	// mCountries is a map of country codes to country names and locodes.
-	mCountries map[CountryCode]countryData
+	mCountries map[countryCode]countryData
 )
 
 // Get returns a record for a given locode string. The string must be 5 or 6
@@ -44,7 +44,7 @@ func Get(locodeStr string) (Record, error) {
 		}
 	}
 
-	cc := CountryCode{}
+	cc := countryCode{}
 	copy(cc[:], locodeStr[:2])
 	cd, countryFound := mCountries[cc]
 	if !countryFound {
@@ -53,9 +53,9 @@ func Get(locodeStr string) (Record, error) {
 
 	code := locodeStr[CountryCodeLen:]
 	n, _ := slices.BinarySearchFunc(cd.locodes, code, func(csv locodesCSV, s string) int {
-		return cmp.Compare(codeFromCSV(&csv), s)
+		return cmp.Compare(csv.code, s)
 	})
-	if n == len(cd.locodes) || strings.Compare(codeFromCSV(&cd.locodes[n]), code) != 0 {
+	if n == len(cd.locodes) || strings.Compare(cd.locodes[n].code, code) != 0 {
 		return Record{}, ErrNotFound
 	}
 
@@ -67,10 +67,6 @@ func Get(locodeStr string) (Record, error) {
 		Point:      cd.locodes[n].point,
 		Cont:       cd.locodes[n].continent,
 	}, nil
-}
-
-func codeFromCSV(c *locodesCSV) string {
-	return string(c.code[:])
 }
 
 func locFromCSV(c *locodesCSV) string {

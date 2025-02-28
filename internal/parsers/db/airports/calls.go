@@ -94,15 +94,13 @@ const (
 // and returns the name of the country by code.
 //
 // Returns locodedb.ErrCountryNotFound if no entry matches.
-func (db *DB) CountryName(code *locodedb.CountryCode) (name string, err error) {
+func (db *DB) CountryName(code string) (name string, err error) {
 	if err = db.initCountries(); err != nil {
 		return
 	}
 
-	argCode := code.String()
-
 	for cName, cCode := range db.mCountries {
-		if cCode == argCode {
+		if cCode == code {
 			name = cName
 			break
 		}

@@ -45,15 +45,15 @@ type countryData struct {
 type locodesCSV struct {
 	point         Point
 	offset        uint32
-	code          LocationCode
+	code          string
 	locationLen   uint8
 	subDivCodeLen uint8
 	subDivNameLen uint8
 	continent     Continent
 }
 
-func unpackCountriesData(data []byte) (map[CountryCode]countryData, error) {
-	m := make(map[CountryCode]countryData)
+func unpackCountriesData(data []byte) (map[countryCode]countryData, error) {
+	m := make(map[countryCode]countryData)
 
 	zReader := bzip2.NewReader(bytes.NewReader(data))
 	reader := csv.NewReader(zReader)
@@ -65,16 +65,16 @@ func unpackCountriesData(data []byte) (map[CountryCode]countryData, error) {
 		} else if err != nil {
 			return m, err
 		}
-		countryCode, err := CountryCodeFromString(record[0])
+		cc, err := countryCodeFromString(record[0])
 		if err != nil {
 			return m, err
 		}
-		m[*countryCode] = countryData{name: record[1]}
+		m[*cc] = countryData{name: record[1]}
 	}
 	return m, nil
 }
 
-func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, error) {
+func unpackLocodesData(data []byte, mc map[countryCode]countryData) (string, error) {
 	var (
 		b       strings.Builder
 		zReader = bzip2.NewReader(bytes.NewReader(data))
@@ -100,14 +100,12 @@ func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, err
 			return "", errors.New("string buffer int32 overflow")
 		}
 		var (
-			code          LocationCode
 			recOffset     = uint32(b.Len())
 			locationLen   = uint8(len(record[1]))
 			subDivCodeLen = uint8(len(record[3]))
 			subDivNameLen = uint8(len(record[4]))
 		)
 
-		copy(code[:], record[0][CountryCodeLen:])
 		b.WriteString(record[1])
 		b.WriteString(record[3])
 		b.WriteString(record[4])
@@ -124,24 +122,24 @@ func unpackLocodesData(data []byte, mc map[CountryCode]countryData) (string, err
 			return "", err
 		}
 
-		countryCode, err := CountryCodeFromString(record[0][:CountryCodeLen])
+		cc, err := countryCodeFromString(record[0][:CountryCodeLen])
 		if err != nil {
 			return "", err
 		}
-		rec, ok := mc[*countryCode]
+		rec, ok := mc[*cc]
 		if !ok {
 			return "", errors.New("invalid country in the DB")
 		}
 		rec.locodes = append(rec.locodes, locodesCSV{
 			point:         Point{Latitude: float32(lat), Longitude: float32(lng)},
-			code:          code,
+			code:          record[0][CountryCodeLen:],
 			offset:        recOffset,
 			locationLen:   locationLen,
 			subDivCodeLen: subDivCodeLen,
 			subDivNameLen: subDivNameLen,
 			continent:     continent,
 		})
-		mc[*countryCode] = rec
+		mc[*cc] = rec
 	}
 	for k := range mc {
 		rec := mc[k]

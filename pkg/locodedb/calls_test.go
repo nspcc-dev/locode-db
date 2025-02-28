@@ -65,8 +65,4 @@ func TestGet(t *testing.T) {
 			require.Equal(t, utf8.ValidString(rec.SubDivName), true)
 		})
 	})
-	t.Run("valid key", func(t *testing.T) {
-		_, err := locodedb.NewKey("RU", "MOW")
-		require.NoError(t, err)
-	})
 }

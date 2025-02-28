@@ -54,14 +54,14 @@ type NamesDB interface {
 	//
 	// Must return ErrCountryNotFound if there is no
 	// country with the provided code.
-	CountryName(*locodedb.CountryCode) (string, error)
+	CountryName(string) (string, error)
 
 	// SubDivName must resolve (country code, subdivision code) to
 	// a subdivision name.
 	//
 	// Must return ErrSubDivNotFound if either country or
 	// subdivision is not presented in database.
-	SubDivName(*locodedb.CountryCode, string) (string, error)
+	SubDivName(string, string) (string, error)
 }
 
 // FillDatabase generates the location database based on the UN/LOCODE table.
@@ -72,7 +72,7 @@ func FillDatabase(table SourceTable, airports AirportDB, continents ContinentsDB
 			return nil
 		}
 
-		dbKey, err := locodedb.NewKey(tableRecord.LOCODE[0], tableRecord.LOCODE[1])
+		dbKey, err := NewKey(tableRecord.LOCODE[0], tableRecord.LOCODE[1])
 		if err != nil {
 			return err
 		}

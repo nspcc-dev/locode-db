@@ -23,7 +23,7 @@ const (
 
 // Data is a struct that contains the Key and the Record.
 type Data struct {
-	Key    locodedb.Key
+	Key    Key
 	Record locodedb.Record
 }
 
@@ -40,7 +40,7 @@ func (db *CsvDB) Put(data []Data) error {
 		rec := row.Record
 
 		// Calculate a unique index for each key
-		keyString := key.CountryCode().String() + key.LocationCode().String()
+		keyString := key.CountryCode() + key.LocationCode()
 
 		if index, exists := uniqueKeys[keyString]; exists {
 			// We expected duplicates from override.csv to override wrong number format in location
@@ -64,14 +64,14 @@ func (db *CsvDB) Put(data []Data) error {
 
 		newRecordsLocode = append(newRecordsLocode, newRecord)
 
-		if _, exists := uniqueKeysCountry[key.CountryCode().String()]; exists {
+		if _, exists := uniqueKeysCountry[key.CountryCode()]; exists {
 			continue
 		}
 
-		uniqueKeysCountry[key.CountryCode().String()] = struct{}{}
+		uniqueKeysCountry[key.CountryCode()] = struct{}{}
 
 		newRecordCountry := []string{
-			key.CountryCode().String(),
+			key.CountryCode(),
 			rec.Country,
 		}
 
