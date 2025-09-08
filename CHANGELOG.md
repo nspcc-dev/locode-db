@@ -3,6 +3,15 @@ Changelog for NeoFS LOCODE database
 
 ## [Unreleased]
 
+## [0.8.1] - 2025-09-08
+
+### Changed
+- Minimal supported Go version is 1.24 now (#58)
+
+### Updated
+- golang.org/x/text dependency to v0.29.0 (#58)
+- LOCODE DB revision, bringing CNFEH and FRBEC (with the same 2024-2 base version, #58)
+
 ## [0.8.0] - 2025-02-28
 
 ### Removed
