@@ -21,7 +21,7 @@ var (
 func BenchmarkUnpack(b *testing.B) {
 	require.NotEmpty(b, testCountriesData)
 	require.NotEmpty(b, testLocodesData)
-	for range b.N {
+	for b.Loop() {
 		m, err := unpackCountriesData(testCountriesData)
 		require.NoError(b, err)
 		_, err = unpackLocodesData(testLocodesData, m)
@@ -33,8 +33,7 @@ func BenchmarkGet(b *testing.B) {
 	require.NoError(b, initLocodeData())
 	_, err := Get("RU MOW")
 	require.NoError(b, err)
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		_, _ = Get("RU MOW")
 		_, _ = Get("AAAAA")
 		_, _ = Get("SESTO")
