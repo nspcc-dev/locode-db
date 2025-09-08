@@ -15,8 +15,7 @@ type CsvDB struct {
 }
 
 func New(path string) CsvDB {
-	switch {
-	case path == "":
+	if path == "" {
 		panicOnPrmValue("Path", path)
 	}
 	_, err := os.Stat(path)
