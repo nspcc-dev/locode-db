@@ -53,9 +53,9 @@ func Get(locodeStr string) (Record, error) {
 
 	code := locodeStr[CountryCodeLen:]
 	n, _ := slices.BinarySearchFunc(cd.locodes, code, func(csv locodesCSV, s string) int {
-		return cmp.Compare(csv.code, s)
+		return cmp.Compare(codeFromCSV(&csv), s)
 	})
-	if n == len(cd.locodes) || strings.Compare(cd.locodes[n].code, code) != 0 {
+	if n == len(cd.locodes) || strings.Compare(codeFromCSV(&cd.locodes[n]), code) != 0 {
 		return Record{}, ErrNotFound
 	}
 
@@ -69,14 +69,18 @@ func Get(locodeStr string) (Record, error) {
 	}, nil
 }
 
+func codeFromCSV(c *locodesCSV) string {
+	return locodeStrings[c.offset : c.offset+LocationCodeLen]
+}
+
 func locFromCSV(c *locodesCSV) string {
-	return locodeStrings[c.offset : c.offset+uint32(c.locationLen)]
+	return locodeStrings[c.offset+LocationCodeLen : c.offset+LocationCodeLen+uint32(c.locationLen)]
 }
 
 func divCodeFromCSV(c *locodesCSV) string {
-	return locodeStrings[c.offset+uint32(c.locationLen) : c.offset+uint32(c.locationLen)+uint32(c.subDivCodeLen)]
+	return locodeStrings[c.offset+LocationCodeLen+uint32(c.locationLen) : c.offset+LocationCodeLen+uint32(c.locationLen)+uint32(c.subDivCodeLen)]
 }
 
 func divNameFromCSV(c *locodesCSV) string {
-	return locodeStrings[c.offset+uint32(c.locationLen)+uint32(c.subDivCodeLen) : c.offset+uint32(c.locationLen)+uint32(c.subDivCodeLen)+uint32(c.subDivNameLen)]
+	return locodeStrings[c.offset+LocationCodeLen+uint32(c.locationLen)+uint32(c.subDivCodeLen) : c.offset+LocationCodeLen+uint32(c.locationLen)+uint32(c.subDivCodeLen)+uint32(c.subDivNameLen)]
 }
