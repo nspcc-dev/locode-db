@@ -4,7 +4,6 @@ import (
 	"cmp"
 	"errors"
 	"slices"
-	"strings"
 )
 
 // ErrNotFound is returned when the record is not found in the location database.
@@ -52,10 +51,10 @@ func Get(locodeStr string) (Record, error) {
 	}
 
 	code := locodeStr[CountryCodeLen:]
-	n, _ := slices.BinarySearchFunc(cd.locodes, code, func(csv locodesCSV, s string) int {
+	n, ok := slices.BinarySearchFunc(cd.locodes, code, func(csv locodesCSV, s string) int {
 		return cmp.Compare(codeFromCSV(&csv), s)
 	})
-	if n == len(cd.locodes) || strings.Compare(codeFromCSV(&cd.locodes[n]), code) != 0 {
+	if !ok {
 		return Record{}, ErrNotFound
 	}
 
