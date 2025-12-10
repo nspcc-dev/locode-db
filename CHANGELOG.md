@@ -3,6 +3,11 @@ Changelog for NeoFS LOCODE database
 
 ## [Unreleased]
 
+## [0.8.2] - 2025-12-10
+
+### Changed
+- Optimized memory allocations (#60)
+
 ## [0.8.1] - 2025-09-08
 
 ### Changed
@@ -103,4 +108,6 @@ Initial release.
 [0.6.0]: https://github.com/nspcc-dev/locode-db/compare/v0.5.0...v0.6.0
 [0.7.0]: https://github.com/nspcc-dev/locode-db/compare/v0.6.0...v0.7.0
 [0.8.0]: https://github.com/nspcc-dev/locode-db/compare/v0.7.0...v0.8.0
-[Unreleased]: https://github.com/nspcc-dev/locode-db/compare/v0.8.0...master
+[0.8.1]: https://github.com/nspcc-dev/locode-db/compare/v0.8.0...v0.8.1
+[0.8.2]: https://github.com/nspcc-dev/locode-db/compare/v0.8.1...v0.8.2
+[Unreleased]: https://github.com/nspcc-dev/locode-db/compare/v0.8.2...master
