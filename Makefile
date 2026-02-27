@@ -5,7 +5,7 @@ LOCODEDB ?= pkg/locodedb/data
 UNLOCODEREVISION = 94ccba00ee41a6bb5c76d71edca246a55778c507
 OPENFLIGHTSREVISION = f9f41975b6d101425848284f978477a38c26b6ff
 
-.PHONY: all clean version help generate lint
+.PHONY: all clean version help generate lint modernize
 
 DIRS = in ${LOCODEDB}
 
@@ -60,6 +60,11 @@ compress_locodedb: generate
 # Lint Go code
 lint: .golangci.yml
 	golangci-lint run
+
+# Prettify code
+modernize:
+	@echo "⇒ Processing modernize check"
+	@go run golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize@latest -fix ./...
 
 # Print version
 version:

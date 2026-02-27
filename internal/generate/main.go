@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"log"
+	"slices"
 	"strings"
 
 	locode "github.com/nspcc-dev/locode-db/internal/parsers/db"
@@ -38,10 +39,8 @@ var (
 func init() {
 	flag.Func(locodeGenerateInputFlag, "List of paths to UN/LOCODE tables (CSV)", func(s string) error {
 		splitStr := strings.Split(s, ",")
-		for _, path := range splitStr {
-			if path == "" {
-				return errors.New("path is empty")
-			}
+		if slices.Contains(splitStr, "") {
+			return errors.New("path is empty")
 		}
 		locodeGenerateInPaths = append(locodeGenerateInPaths, splitStr...)
 		return nil
