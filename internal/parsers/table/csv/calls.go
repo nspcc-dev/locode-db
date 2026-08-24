@@ -5,14 +5,12 @@ import (
 	"errors"
 	"io"
 	"os"
-	"strings"
 	"unicode/utf8"
 
 	locode "github.com/nspcc-dev/locode-db/internal/parsers/db"
-	"golang.org/x/text/encoding/charmap"
 )
 
-var errInvalidSubName = errors.New("could not convert subDivName to uft-8 valid string")
+var errInvalidSubName = errors.New("subDivName is not UTF-8")
 var errInvalidRecord = errors.New("invalid table record")
 
 // IterateAll scans a table record one-by-one, parses a UN/LOCODE record
@@ -82,24 +80,6 @@ func (t *Table) SubDivName(countryCode string, code string) (string, error) {
 	return rec.name, nil
 }
 
-func isValidString(s string) bool {
-	return !strings.Contains(s, "\uFFFD") && !strings.Contains(s, "\u0000") && !strings.Contains(s, "?")
-}
-
-func utf8encoding(subdivCountry string) (string, error) {
-	res, err := charmap.Windows1256.NewDecoder().String(subdivCountry)
-	if err == nil && isValidString(res) {
-		return res, nil
-	}
-
-	res, err = charmap.ISO8859_1.NewDecoder().String(subdivCountry)
-	if err == nil && isValidString(res) {
-		return res, nil
-	}
-
-	return subdivCountry, errInvalidSubName
-}
-
 func (t *Table) initSubDiv() (err error) {
 	t.subDivOnce.Do(func() {
 		t.mSubDiv = make(map[subDivKey]subDivRecord)
@@ -107,13 +87,7 @@ func (t *Table) initSubDiv() (err error) {
 		err = t.scanWords([]string{t.subDivPath}, subDivFldNum, func(words []string) error {
 			subdiv := words[subDivName]
 			if !utf8.ValidString(subdiv) {
-				subdiv, err = utf8encoding(subdiv)
-				if err != nil {
-					if errors.Is(err, errInvalidSubName) {
-						return nil
-					}
-					return err
-				}
+				return errInvalidSubName
 			}
 			t.mSubDiv[subDivKey{
 				countryCode: words[subDivCountry],

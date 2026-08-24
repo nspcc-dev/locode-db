@@ -5,7 +5,6 @@ go 1.26
 require (
 	github.com/paulmach/orb v0.13.0
 	github.com/stretchr/testify v1.12.1
-	golang.org/x/text v0.41.0
 )
 
 require (
