@@ -3,6 +3,14 @@ Changelog for NeoFS LOCODE database
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-08-24
+
+### Updated
+- Minimal supported Go version to 1.26 (#64, #69)
+- UN/LOCODE to `2025-1` version with fixes (#69)
+- github.com/paulmach/orb dependency from v0.12.0 to v0.13.0 (#70)
+- golang.org/x/text dependency from v0.34.0 to v0.41.0 (#70)
+
 ## [0.8.2] - 2025-12-10
 
 ### Changed
@@ -110,4 +118,5 @@ Initial release.
 [0.8.0]: https://github.com/nspcc-dev/locode-db/compare/v0.7.0...v0.8.0
 [0.8.1]: https://github.com/nspcc-dev/locode-db/compare/v0.8.0...v0.8.1
 [0.8.2]: https://github.com/nspcc-dev/locode-db/compare/v0.8.1...v0.8.2
-[Unreleased]: https://github.com/nspcc-dev/locode-db/compare/v0.8.2...master
+[0.9.0]: https://github.com/nspcc-dev/locode-db/compare/v0.8.2...v0.9.0
+[Unreleased]: https://github.com/nspcc-dev/locode-db/compare/v0.9.0...master
